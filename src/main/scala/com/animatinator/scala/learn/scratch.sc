@@ -26,3 +26,12 @@ def filter[T](fn : T => Boolean, list : List[T]) : List[T] = {
 }
 
 filter((x : Int) => x % 2 == 0, List(1, 2, 3, 4, 5, 6))
+
+def foldl[T](fn : (T, T) => T, list : List[T], acc : T) : T = {
+  list match {
+    case x::more => foldl(fn, more, fn(acc, x))
+    case _ => acc
+  }
+}
+
+foldl((x : Int, y : Int) => x + y, List(1, 2, 3, 4, 5), 0)
