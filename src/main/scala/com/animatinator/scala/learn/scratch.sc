@@ -82,3 +82,39 @@ def testTree = createTreeNode(5)
       .withRightChild(createTreeNode(10))))
 
 treeSum(testTree)
+
+def isWellOrdered[T <% Comparable[T]](tree : Tree[T]) : Boolean =
+  wellOrderedInner(tree, None, None)
+
+def minWithOption[T <% Ordered[T]](value : T, option : Option[T]) : T = {
+  option match {
+    case Some(op) => if (op < value) op else value
+    case None => value
+  }
+}
+
+def maxWithOption[T <% Ordered[T]](value : T, option : Option[T]) : T = {
+  option match {
+    case Some(op) => if (op > value) op else value
+    case None => value
+  }
+}
+
+def wellOrderedInner[T <% Ordered[T]](tree : Tree[T], min : Option[T], max : Option[T]) : Boolean = {
+  tree match {
+    case Leaf() => true
+    case Node(left, value, right) =>
+      def leftBound = if (min.isDefined) value > min.get else true
+
+      def rightBound = if (max.isDefined) value < max.get else true
+
+      def leftSubtree = wellOrderedInner(left, min, Some(minWithOption(value, max)))
+
+      def rightSubTree = wellOrderedInner(right, Some(maxWithOption(value, min)), max)
+
+      leftBound && rightBound && leftSubtree && rightSubTree
+  }
+}
+
+isWellOrdered(createTreeNode(5).withLeftChild(createTreeNode(7)))
+isWellOrdered(testTree)
