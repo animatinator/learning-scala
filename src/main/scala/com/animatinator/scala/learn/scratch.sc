@@ -27,11 +27,58 @@ def filter[T](fn : T => Boolean, list : List[T]) : List[T] = {
 
 filter((x : Int) => x % 2 == 0, List(1, 2, 3, 4, 5, 6))
 
-def foldl[T](fn : (T, T) => T, list : List[T], acc : T) : T = {
+def foldLeft[T](fn : (T, T) => T, list : List[T], acc : T) : T = {
   list match {
-    case x::more => foldl(fn, more, fn(acc, x))
+    case x::more => foldLeft(fn, more, fn(acc, x))
     case _ => acc
   }
 }
 
-foldl((x : Int, y : Int) => x + y, List(1, 2, 3, 4, 5), 0)
+foldLeft((x : Int, y : Int) => x + y, List(1, 2, 3, 4, 5), 0)
+
+abstract class Tree[T]
+case class Node[T](left : Tree[T], value : T, right : Tree[T]) extends Tree[T] {
+  def withLeftChild(newLeft : Tree[T]): Node[T] = {
+    left match {
+      case Node(_, _, _) => throw new Exception("Already has a left child")
+      case Leaf() => Node(newLeft, value, right)
+    }
+  }
+
+  def withRightChild(newRight : Tree[T]): Node[T] = {
+    right match {
+      case Node(_, _, _) => throw new Exception("Already has a left child")
+      case Leaf() => Node(left, value, newRight)
+    }
+  }
+}
+case class Leaf[T]() extends Tree[T]
+
+def treeSum(tree : Tree[Int]) : Int = {
+  tree match {
+    case Node(left, value, right) => treeSum(left) + value + treeSum(right)
+    case Leaf() => 0
+  }
+}
+
+def createTreeNode[T](value : T) = Node[T](Leaf[T](), value, Leaf[T]())
+
+treeSum(createTreeNode(5))
+
+treeSum(
+  createTreeNode(5)
+    .withLeftChild(createTreeNode(4))
+    .withRightChild(createTreeNode(3)))
+
+def testTree = createTreeNode(5)
+  .withLeftChild(createTreeNode(3)
+    .withLeftChild(createTreeNode(2)
+      .withLeftChild(createTreeNode(1)))
+    .withRightChild(createTreeNode(4)))
+  .withRightChild(createTreeNode(8)
+    .withLeftChild(createTreeNode(7)
+      .withLeftChild(createTreeNode(6)))
+    .withRightChild(createTreeNode(9)
+      .withRightChild(createTreeNode(10))))
+
+treeSum(testTree)
