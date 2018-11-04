@@ -70,7 +70,7 @@ treeSum(
     .withLeftChild(createTreeNode(4))
     .withRightChild(createTreeNode(3)))
 
-def testTree = createTreeNode(5)
+val testTree = createTreeNode(5)
   .withLeftChild(createTreeNode(3)
     .withLeftChild(createTreeNode(2)
       .withLeftChild(createTreeNode(1)))
@@ -118,3 +118,42 @@ def wellOrderedInner[T <% Ordered[T]](tree : Tree[T], min : Option[T], max : Opt
 
 isWellOrdered(createTreeNode(5).withLeftChild(createTreeNode(7)))
 isWellOrdered(testTree)
+
+
+abstract class Expression
+case class Sum(left : Expression, right : Expression) extends Expression
+case class Var(n : String) extends Expression
+case class Constant(i : Int) extends Expression
+
+type Environment = String => Int
+
+def eval(expression : Expression, environment : Environment) : Int = expression match {
+  case Constant(i) => i
+  case Var(n) => environment(n)
+  case Sum(left, right) => eval(left, environment) + eval(right, environment)
+}
+
+val testExp = Sum(Sum(Var("x"), Var("x")), Sum(Constant(7), Var("y")))
+val testEnv : Environment = {case "x" => 5; case "y" => 7}
+
+eval(testExp, testEnv)
+
+def derive(expression: Expression, variable: String) : Expression = expression match {
+  case Sum(left, right) => Sum(derive(left, variable), derive(right, variable))
+  case Var(n) if n == variable => Constant(1)
+  case _ => Constant(0)
+}
+
+derive(testExp, "x")
+
+def simplify(expression: Expression) : Expression = expression match {
+  case Sum(left, right) =>
+    (simplify(left), simplify(right)) match {
+      case (Constant(x), Constant(y)) => Constant(x + y)
+      case (simpLeft, simpRight) => Sum(simpLeft, simpRight)
+    }
+  case other => other
+}
+
+simplify(derive(testExp, "x"))
+simplify(derive(testExp, "y"))
