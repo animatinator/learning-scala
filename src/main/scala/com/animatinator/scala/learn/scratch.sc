@@ -217,6 +217,12 @@ abstract class BinaryTree[T <% Ordered[T]] {
     case BinaryNode(value, left, right) => BinaryNode(f(value), left map f, right map f)
     case BinaryLeaf() => BinaryLeaf[U]()
   }
+
+  def filter(p : T => Boolean) : BinaryTree[T] = this match {
+    case BinaryLeaf() => BinaryLeaf()
+    case BinaryNode(value, left, right) if p(value) => BinaryNode(value, left.filter(p), right.filter(p))
+    case other => other.decapitate().filter(p)
+  }
 }
 case class BinaryNode[T <% Ordered[T]](value : T, left : BinaryTree[T], right : BinaryTree[T]) extends BinaryTree[T]
 case class BinaryLeaf[T <% Ordered[T]]() extends BinaryTree[T]
@@ -239,3 +245,5 @@ val testBinaryTreeWithSomeRemovals = testBinaryTree.remove(4).remove(9).remove(3
 
 testBinaryTreeWithoutRoot.size() == testBinaryTree.size() - 1
 testBinaryTreeWithSomeRemovals.size() == testBinaryTree.size() - 3
+
+val filteredTestBinaryTree = testBinaryTree.filter(value => (value % 2) == 0)
