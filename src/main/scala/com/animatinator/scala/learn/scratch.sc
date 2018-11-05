@@ -157,3 +157,92 @@ def simplify(expression: Expression) : Expression = expression match {
 
 simplify(derive(testExp, "x"))
 simplify(derive(testExp, "y"))
+
+
+abstract class BinaryTree[T <% Ordered[T]] {
+  def insert(item : T) : BinaryTree[T] = this match {
+    case BinaryNode(value, left, right) =>
+      if (item < value) BinaryNode(value, left.insert(item), right)
+      else BinaryNode(value, left, right.insert(item))
+    case BinaryLeaf() => BinaryNode(item, BinaryLeaf(), BinaryLeaf())
+  }
+
+  def contains(item : T) : Boolean = this match {
+    case BinaryNode(value, left, right) =>
+      (item == value) || (left contains item) || (right contains item)
+    case BinaryLeaf() => false
+  }
+
+  def map[U <% Ordered[U]](f : T => U) : BinaryTree[U] = this match {
+    case BinaryNode(value, left, right) => BinaryNode(f(value), left map f, right map f)
+    case BinaryLeaf() => BinaryLeaf[U]()
+  }
+}
+case class BinaryNode[T <% Ordered[T]](value : T, left : BinaryTree[T], right : BinaryTree[T]) extends BinaryTree[T]
+case class BinaryLeaf[T <% Ordered[T]]() extends BinaryTree[T]
+
+val testBinaryTree = BinaryLeaf[Int]()
+  .insert(5)
+  .insert(3)
+  .insert(6)
+  .insert(4)
+  .insert(2)
+  .insert(11)
+  .insert(9)
+
+(testBinaryTree contains 2) && (testBinaryTree contains 6) && (testBinaryTree contains 11)
+
+testBinaryTree map (1 +)
+
+def minVal[T <% Ordered[T]](tree: BinaryTree[T]) : T = tree match {
+  case BinaryNode(value, left, _) =>
+    if (left.isInstanceOf[BinaryNode[T]]) minVal(left) else value
+  case _ => throw new Exception("A leaf has no minimum value!");
+}
+
+minVal(testBinaryTree)
+
+def removeMinimumValue[T <% Ordered[T]](tree : BinaryTree[T]) : BinaryTree[T] = tree match {
+  case BinaryNode(value, left, right) =>
+    if (left.isInstanceOf[BinaryNode[T]]) BinaryNode(value, removeMinimumValue(left), right)
+    else right
+}
+
+val testBinaryTreeAfterRemovals = removeMinimumValue(removeMinimumValue(testBinaryTree))
+
+val minOfTestBinaryTreeAfterRemovals = minVal(testBinaryTreeAfterRemovals)
+
+def removeRoot[T <% Ordered[T]](tree : BinaryTree[T]) : BinaryTree[T] = tree match {
+  case BinaryLeaf() => BinaryLeaf()
+  case BinaryNode(_, baseLeft, baseRight) =>
+    (baseLeft, baseRight) match {
+      case (BinaryLeaf(), right) => right
+      case (left, BinaryLeaf()) => left
+      case (left, right) =>
+        val newRoot = minVal(right)
+        BinaryNode(newRoot, left, removeMinimumValue(right))
+    }
+}
+
+def size[T <% Ordered[T]](tree : BinaryTree[T]) : Int = tree match {
+  case BinaryLeaf() => 0
+  case BinaryNode(_, left, right) => 1 + size(left) + size(right)
+}
+
+val testBinaryTreeWithRootRemoved = removeRoot(testBinaryTree)
+size(testBinaryTree)
+size(testBinaryTreeWithRootRemoved)
+
+removeRoot[Int](BinaryNode(3, BinaryNode(2, BinaryLeaf(), BinaryLeaf()), BinaryLeaf()))
+removeRoot[Int](BinaryNode(3, BinaryLeaf(), BinaryNode(2, BinaryLeaf(), BinaryLeaf())))
+
+def removeFromBinaryTree[T <% Ordered[T]](tree : BinaryTree[T], toRemove : T) : BinaryTree[T] = tree match {
+  case BinaryLeaf() => BinaryLeaf()
+  case BinaryNode(value, left, right) => if (value == toRemove) {
+    removeRoot(BinaryNode(value, left, right))
+  } else {
+    BinaryNode(value, removeFromBinaryTree(left, toRemove), removeFromBinaryTree(right, toRemove))
+  }
+}
+
+size(removeFromBinaryTree(testBinaryTree, 4))
