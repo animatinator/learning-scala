@@ -247,3 +247,37 @@ testBinaryTreeWithoutRoot.size() == testBinaryTree.size() - 1
 testBinaryTreeWithSomeRemovals.size() == testBinaryTree.size() - 3
 
 val filteredTestBinaryTree = testBinaryTree.filter(value => (value % 2) == 0)
+
+
+class InfiniteSequence[T](head : T, next : T => T) {
+  def tail : InfiniteSequence[T] = new InfiniteSequence[T](next(head), next)
+
+  override def toString = "" + head + "..."
+}
+
+val naturals = new InfiniteSequence[Int](1, n => n + 1)
+
+naturals.tail.tail
+
+
+class Point(val x : Double, val y : Double) {
+
+  private def combine(second : Point, f : (Double, Double) => Double): Point =
+    new Point(f(x, second.x), f(y, second.y))
+
+  def +(other : Point): Point = combine(other, (x, y) => x + y)
+
+  def -(other : Point) : Point = combine(other, (x, y) => x - y)
+
+  def *(mult : Double) : Point = new Point(x * mult, y * mult)
+
+  def magnitude = Math.sqrt((x * x) + (y * y))
+
+  override def toString = "("+x+", "+y+")"
+}
+
+new Point(1, 2) + new Point(3, 4)
+
+val negativePoint = new Point(1, 2) - new Point(3, 4)
+
+(negativePoint * 5).magnitude == negativePoint.magnitude * 5
