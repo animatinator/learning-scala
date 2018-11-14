@@ -120,7 +120,7 @@ isWellOrdered(createTreeNode(5).withLeftChild(createTreeNode(7)))
 isWellOrdered(testTree)
 
 
-abstract class Expression
+sealed abstract class Expression
 case class Sum(left : Expression, right : Expression) extends Expression
 case class Var(n : String) extends Expression
 case class Constant(i : Int) extends Expression
@@ -328,3 +328,12 @@ numbers.foldLeft(0)(_ + 2 * _)
 numbers.foldLeft(List[Int]())(_ :+ _)
 
 (0 /: numbers)(_+_)
+
+
+def isPiIsh(num : Double) = num match {
+  case 3.14 => true
+  case _ => false
+}
+
+isPiIsh(3.14)
+isPiIsh(3.5)
