@@ -261,23 +261,33 @@ naturals.tail.tail
 
 
 class Point(val x : Double, val y : Double) {
-
-  private def combine(second : Point, f : (Double, Double) => Double): Point =
-    new Point(f(x, second.x), f(y, second.y))
-
-  def +(other : Point): Point = combine(other, (x, y) => x + y)
-
-  def -(other : Point) : Point = combine(other, (x, y) => x - y)
-
-  def *(mult : Double) : Point = new Point(x * mult, y * mult)
-
-  def magnitude = Math.sqrt((x * x) + (y * y))
-
   override def toString = "("+x+", "+y+")"
 }
 
-new Point(1, 2) + new Point(3, 4)
+trait OperatorPoint[T <: OperatorPoint[T]] extends Point {
+  def combine(second : Point, f : (Double, Double) => Double): T
 
-val negativePoint = new Point(1, 2) - new Point(3, 4)
+  def +(other : Point): T = combine(other, (x, y) => x + y)
+
+  def -(other : Point) : T = combine(other, (x, y) => x - y)
+
+  def *(mult : Double) : T
+}
+
+trait MagnitudePoint extends Point {
+  def magnitude = Math.sqrt((x * x) + (y * y))
+}
+
+class FancyPoint(x : Double, y : Double) extends Point(x, y) with OperatorPoint[FancyPoint] with MagnitudePoint {
+  def combine(second : Point, f : (Double, Double) => Double) =
+    new FancyPoint(f(x, second.x), f(y, second.y))
+
+  def *(mult : Double) : FancyPoint = new FancyPoint(x * mult, y * mult)
+}
+
+new FancyPoint(1, 2) + new FancyPoint(3, 4)
+
+val negativePoint = new FancyPoint(1, 2) - new FancyPoint(3, 4)
 
 (negativePoint * 5).magnitude == negativePoint.magnitude * 5
+
