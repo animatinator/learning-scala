@@ -317,4 +317,14 @@ trait RichIterator extends AbsIterator {
 
 class RichStringIter(string : String) extends StringIterator(string) with RichIterator
 
-new RichStringIter("Hello") foreach (char => System.out.println(char))
+new RichStringIter("Hello") foreach println
+
+
+val numbers = Seq(1, 2, 3, 4, 5)
+numbers map (_ * 2)
+
+numbers.foldLeft(0)(_ + 2 * _)
+
+numbers.foldLeft(List[Int]())(_ :+ _)
+
+(0 /: numbers)(_+_)
