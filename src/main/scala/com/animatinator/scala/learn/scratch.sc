@@ -291,3 +291,30 @@ val negativePoint = new FancyPoint(1, 2) - new FancyPoint(3, 4)
 
 (negativePoint * 5).magnitude == negativePoint.magnitude * 5
 
+
+abstract class AbsIterator {
+  type T
+  def hasNext : Boolean
+  def next : T
+}
+
+class StringIterator(string : String) extends AbsIterator {
+  type T = Char
+  private var i = 0
+
+  override def hasNext = i < string.length
+
+  override def next = {
+    val ch = string charAt i
+    i += 1
+    ch
+  }
+}
+
+trait RichIterator extends AbsIterator {
+  def foreach(f : T => Unit): Unit = while(hasNext) f(next)
+}
+
+class RichStringIter(string : String) extends StringIterator(string) with RichIterator
+
+new RichStringIter("Hello") foreach (char => System.out.println(char))
