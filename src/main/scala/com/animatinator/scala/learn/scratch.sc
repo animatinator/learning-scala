@@ -83,24 +83,24 @@ val testTree = createTreeNode(5)
 
 treeSum(testTree)
 
-def isWellOrdered[T <% Comparable[T]](tree : Tree[T]) : Boolean =
+def isWellOrdered[T](tree : Tree[T])(implicit comp: T => Ordered[T]) : Boolean =
   wellOrderedInner(tree, None, None)
 
-def minWithOption[T <% Ordered[T]](value : T, option : Option[T]) : T = {
+def minWithOption[T](value : T, option : Option[T])(implicit comp: T => Ordered[T]) : T = {
   option match {
     case Some(op) => if (op < value) op else value
     case None => value
   }
 }
 
-def maxWithOption[T <% Ordered[T]](value : T, option : Option[T]) : T = {
+def maxWithOption[T](value : T, option : Option[T])(implicit comp: T => Ordered[T]) : T = {
   option match {
     case Some(op) => if (op > value) op else value
     case None => value
   }
 }
 
-def wellOrderedInner[T <% Ordered[T]](tree : Tree[T], min : Option[T], max : Option[T]) : Boolean = {
+def wellOrderedInner[T](tree : Tree[T], min : Option[T], max : Option[T])(implicit comp: T => Ordered[T]) : Boolean = {
   tree match {
     case Leaf() => true
     case Node(left, value, right) =>
@@ -159,7 +159,7 @@ simplify(derive(testExp, "x"))
 simplify(derive(testExp, "y"))
 
 
-abstract class BinaryTree[T <% Ordered[T]] {
+abstract class BinaryTree[T](implicit comp : T => Ordered[T]) {
   def insert(item : T) : BinaryTree[T] = this match {
     case BinaryNode(value, left, right) =>
       if (item < value) BinaryNode(value, left.insert(item), right)
@@ -213,7 +213,7 @@ abstract class BinaryTree[T <% Ordered[T]] {
     }
   }
 
-  def map[U <% Ordered[U]](f : T => U) : BinaryTree[U] = this match {
+  def map[U](f : T => U)(implicit comp: U => Ordered[U]) : BinaryTree[U] = this match {
     case BinaryNode(value, left, right) => BinaryNode(f(value), left map f, right map f)
     case BinaryLeaf() => BinaryLeaf[U]()
   }
@@ -224,8 +224,8 @@ abstract class BinaryTree[T <% Ordered[T]] {
     case other => other.decapitate().filter(p)
   }
 }
-case class BinaryNode[T <% Ordered[T]](value : T, left : BinaryTree[T], right : BinaryTree[T]) extends BinaryTree[T]
-case class BinaryLeaf[T <% Ordered[T]]() extends BinaryTree[T]
+case class BinaryNode[T](value : T, left : BinaryTree[T], right : BinaryTree[T])(implicit comp: T => Ordered[T]) extends BinaryTree[T]
+case class BinaryLeaf[T]()(implicit comp: T => Ordered[T]) extends BinaryTree[T]
 
 val testBinaryTree = BinaryLeaf[Int]()
   .insert(5)
