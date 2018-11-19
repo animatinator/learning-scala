@@ -102,4 +102,72 @@ class ListProblemsTest extends FunSuite {
   test("compress_groupedDuplicates") {
     assert(ListProblems.compress(List(1, 1, 2, 3, 2, 2, 4, 4, 5)) == List(1, 2, 3, 2, 4, 5))
   }
+
+  test("pack_empty") {
+    assert(ListProblems.pack(Nil) == Nil)
+  }
+
+  test("pack_oneElement") {
+    assert(ListProblems.pack(List(1)) == List(List(1)))
+  }
+
+  test("pack_singles") {
+    assert(ListProblems.pack(List(1, 2, 3)) == List(List(1), List(2), List(3)))
+  }
+
+  test("pack_groups") {
+    assert(ListProblems.pack(List(1, 1, 2, 3, 3)) == List(List(1, 1), List(2), List(3, 3)))
+  }
+
+  test("encode_empty") {
+    assert(ListProblems.encode(Nil) == Nil)
+  }
+
+  test("encode_singleElement") {
+    assert(ListProblems.encode(List(1)) == List((1, 1)))
+  }
+
+  test("encode_severalElements") {
+    assert(ListProblems.encode(List(1, 1, 1, 2, 2, 3, 3, 4)) == List((3, 1), (2, 2), (2, 3), (1, 4)))
+  }
+
+  test("encodeModified_mixture") {
+    assert(ListProblems.encodeModified(List(1, 1, 2, 3, 3)) == List((2, 1), 2, (2, 3)))
+  }
+
+  test("decode_empty") {
+    assert(ListProblems.decode(Nil) == Nil)
+  }
+
+  test("decode_singles") {
+    assert(ListProblems.decode(List((1, 1), (1, 2), (1, 3))) == List(1, 2, 3))
+  }
+
+  test("decode_mixed") {
+    assert(ListProblems.decode(List((3, 1), (2, 2), (1, 3))) == List(1, 1, 1, 2, 2, 3))
+  }
+
+  test("encodeDirect_empty") {
+    assert(ListProblems.encodeDirect(Nil) == Nil)
+  }
+
+  test("encodeDirect_singleElement") {
+    assert(ListProblems.encodeDirect(List(1)) == List((1, 1)))
+  }
+
+  test("encodeDirect_severalElements") {
+    assert(ListProblems.encodeDirect(List(1, 1, 1, 2, 2, 3, 3, 4)) == List((3, 1), (2, 2), (2, 3), (1, 4)))
+  }
+
+  test("duplicate_empty") {
+    assert(ListProblems.duplicate(Nil) == Nil)
+  }
+
+  test("duplicate_someList") {
+    assert(ListProblems.duplicate(List(1, 2, 3, 3, 4)) == List(1, 1, 2, 2, 3, 3, 3, 3, 4, 4))
+  }
+
+  test("duplicateN_someList") {
+    assert(ListProblems.duplicateN(4, List(2, 5)) == List(2, 2, 2, 2, 5, 5, 5, 5))
+  }
 }

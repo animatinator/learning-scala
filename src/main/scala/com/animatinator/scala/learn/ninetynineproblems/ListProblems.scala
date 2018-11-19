@@ -35,4 +35,42 @@ object ListProblems {
       if (list.isEmpty || list.head != current) current :: list
       else list
   }
+
+  def pack[T](list : List[T]) : List[List[T]] = {
+    // Note: turns out this method already exists in the form of List.span(pred).
+    def prefixMatching(list: List[T], pred: T => Boolean): (List[T], List[T]) = list match {
+      case x :: tail if pred(x) => val (subresult, rem) = prefixMatching(tail, pred); (x :: subresult, rem)
+      case somethingElse => (Nil, somethingElse)
+    }
+
+    if (list.isEmpty) Nil else {
+      val (firstBlock, rest) = prefixMatching(list, (x : T) => x == list.head)
+      firstBlock :: pack(rest)
+    }
+  }
+
+  def encode[T](list : List[T]) : List[(Int, T)] = {
+    pack(list) map {xs => (xs.length, xs.head)}
+  }
+
+  def encodeModified[T](list : List[T]) : List[Any] = {
+    encode(list).map {pair => if (pair._1 > 1) pair else pair._2}
+  }
+
+  def decode[T](list : List[(Int, T)]) : List[T] = list flatMap {pair => List.fill(pair._1)(pair._2)}
+
+  def encodeDirect[T](list : List[T]) : List[(Int, T)] = {
+    if (list.isEmpty) Nil
+    else {
+      val (initial, rest) = list span (_ == list.head)
+      (initial.length, list.head) :: encodeDirect(rest)
+    }
+  }
+
+  def duplicate[T](list : List[T]) : List[T] = list match {
+    case x :: xs => x :: x :: duplicate(xs)
+    case Nil => Nil
+  }
+
+  def duplicateN[T](n : Int, list : List[T]) : List[T] = list flatMap {List.fill(n)(_)}
 }
