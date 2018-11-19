@@ -365,3 +365,15 @@ sillyTime match {
     println(""+hours+":"+minutes+":"+seconds)
   case _ => println("Bad match :(")
 }
+
+object LongTime {
+  def unapply(time : SillyTime) = time match {
+    case SillyTime(hours, _, _) => hours > 0
+    case _ => false
+  }
+}
+
+sillyTime match {
+  case LongTime() => println("sillyTime is a long time")
+  case _ => println("Matching didn't work properly")
+}
