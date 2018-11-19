@@ -337,3 +337,31 @@ def isPiIsh(num : Double) = num match {
 
 isPiIsh(3.14)
 isPiIsh(3.5)
+
+
+val basicLinkRegex = "http://www\\.([a-zA-Z0-9]+)\\.com".r
+val stringContainingBasicLink = "Search for stuff at http://www.altavista.com!"
+
+basicLinkRegex.findAllIn(stringContainingBasicLink).subgroups foreach println
+
+
+class SillyTime(val baseSeconds : Long) {
+  def hours = baseSeconds / 3600
+  def minutes = (baseSeconds % 3600) / 60
+  def seconds = baseSeconds % 60
+}
+
+object SillyTime {
+  def apply(seconds : Long) = new SillyTime(seconds)
+
+  def unapply(time : SillyTime) : Option[(Long, Long, Long)] =
+    Some((time.hours, time.seconds, time.minutes))
+}
+
+val sillyTime = SillyTime(3661)
+
+sillyTime match {
+  case SillyTime(hours, minutes, seconds) =>
+    println(""+hours+":"+minutes+":"+seconds)
+  case _ => println("Bad match :(")
+}
