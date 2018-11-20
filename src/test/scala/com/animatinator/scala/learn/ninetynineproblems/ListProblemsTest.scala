@@ -310,4 +310,23 @@ class ListProblemsTest extends FunSuite {
   test("randomSelect_justRight") {
     assert(ListProblems.randomSelect(3, List(1, 2, 3, 4, 5)).length == 3)
   }
+
+  test("lotto_rightNumber") {
+    assert(ListProblems.lotto(3, 10).length == 3)
+  }
+
+  test("lotto_allInRange") {
+    val numbers : List[Int] = ListProblems.lotto(100, 200)
+    assert(numbers forall {x => 0 < x && x < 201})
+  }
+
+  test("randomPermute_rightNumber") {
+    assert(ListProblems.randomPermute(List(1, 2, 3, 4, 5)).length == 5)
+  }
+
+  test("randomPermute_allOriginalsContained") {
+    val original = List(1, 2, 3, 4, 5)
+    val numbers = ListProblems.randomPermute(original)
+    assert(numbers forall {original contains})
+  }
 }

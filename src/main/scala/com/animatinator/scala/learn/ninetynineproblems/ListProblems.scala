@@ -129,4 +129,8 @@ object ListProblems {
     val (remainder, value) = removeAt((new Random).nextInt(list.length), list)
     value :: randomSelect(n - 1, remainder)
   }
+
+  def lotto(num : Int, max : Int) : List[Int] = randomSelect(num, range(1, max))
+
+  def randomPermute[T](list : List[T]) : List[T] = randomSelect(list.length, list)
 }
