@@ -73,4 +73,22 @@ object ListProblems {
   }
 
   def duplicateN[T](n : Int, list : List[T]) : List[T] = list flatMap {List.fill(n)(_)}
+
+  def drop[T](n : Int, list : List[T]) : List[T] = {
+    def dropInner(c : Int, list : List[T]) : List[T] = (c, list) match {
+      case (1, _ :: xs) => dropInner(n, xs)
+      case (_, x :: xs) => x :: dropInner(c - 1, xs)
+      case (_, Nil) => Nil
+    }
+
+    dropInner(n, list)
+  }
+
+  def split[T](n : Int, list : List[T]) : (List[T], List[T]) = (n, list) match {
+    case (_, Nil) => (Nil, Nil)
+    case (0, xs) => (Nil, xs)
+    case (c, x :: xs) =>
+      val (first, second) = split(c - 1, xs)
+      (x :: first, second)
+  }
 }

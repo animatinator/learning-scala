@@ -170,4 +170,36 @@ class ListProblemsTest extends FunSuite {
   test("duplicateN_someList") {
     assert(ListProblems.duplicateN(4, List(2, 5)) == List(2, 2, 2, 2, 5, 5, 5, 5))
   }
+
+  test("drop_empty") {
+    assert(ListProblems.drop(3, Nil) == Nil)
+  }
+
+  test("drop_everything") {
+    assert(ListProblems.drop(1, List(1, 2, 3)) == Nil)
+  }
+
+  test("drop_nBiggerThanLength") {
+    assert(ListProblems.drop(100, List(1, 2, 3)) == List(1, 2, 3))
+  }
+
+  test("drop_standardCase") {
+    assert(ListProblems.drop(3, List(1, 2, 3, 4, 5, 6, 7, 8, 9)) == List(1, 2, 4, 5, 7, 8))
+  }
+
+  test("split_empty") {
+    assert(ListProblems.split(3, Nil) == (Nil, Nil))
+  }
+
+  test("split_longerThanList") {
+    assert(ListProblems.split(3, List(1, 2)) == (List(1, 2), Nil))
+  }
+
+  test("split_emptyFirstPart") {
+    assert(ListProblems.split(0, List(1, 2, 3)) == (Nil, List(1, 2, 3)))
+  }
+
+  test("split_normalCase") {
+    assert(ListProblems.split(3, List(1, 2, 3, 4, 5)) == (List(1, 2, 3), List(4, 5)))
+  }
 }
