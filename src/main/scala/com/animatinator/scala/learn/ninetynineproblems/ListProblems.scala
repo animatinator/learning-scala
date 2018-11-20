@@ -1,5 +1,7 @@
 package com.animatinator.scala.learn.ninetynineproblems
 
+import scala.util.Random
+
 object ListProblems {
   def last[T](list : List[T]) : Option[T] = list match {
     case head :: Nil => Some(head)
@@ -87,8 +89,44 @@ object ListProblems {
   def split[T](n : Int, list : List[T]) : (List[T], List[T]) = (n, list) match {
     case (_, Nil) => (Nil, Nil)
     case (0, xs) => (Nil, xs)
+    // Catch the weird edge case where the input 'n' is negative.
+    case (c, xs) if c < 0 => (Nil, xs)
     case (c, x :: xs) =>
       val (first, second) = split(c - 1, xs)
       (x :: first, second)
+  }
+
+  def slice[T](i : Int, j : Int, list : List[T]) : List[T] = {
+    val (front, _) = split(j, list)
+    val (_, result) = split(i, front)
+    result
+  }
+
+  def rotate[T](distance : Int, list : List[T]): List[T] = {
+    var adjustedDistance = if (list.isEmpty) 0 else distance % list.size
+    if (adjustedDistance < 0) adjustedDistance = adjustedDistance + list.size
+    val (front, back) = split(adjustedDistance, list)
+    back ::: front
+  }
+
+  def removeAt[T](k : Int, list : List[T]) : (List[T], T) = {
+    val valueAt = list(k)
+    ((list take k) ::: (list drop (k + 1)), valueAt)
+  }
+
+  def insertAt[T](value : T, k : Int, list : List[T]) : List[T] = {
+    val (start, end) = list splitAt k
+    start ::: (value :: end)
+  }
+
+  def range(i : Int, j : Int) : List[Int] = (i, j) match {
+    case (x, y) if y < x => Nil
+    case _ => i :: range(i + 1, j)
+  }
+
+  def randomSelect[T](n : Int, list : List[T]) : List[T] = {
+    if (list.isEmpty || n <= 0) return Nil
+    val (remainder, value) = removeAt((new Random).nextInt(list.length), list)
+    value :: randomSelect(n - 1, remainder)
   }
 }

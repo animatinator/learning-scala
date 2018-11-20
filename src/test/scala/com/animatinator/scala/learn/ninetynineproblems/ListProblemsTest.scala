@@ -202,4 +202,112 @@ class ListProblemsTest extends FunSuite {
   test("split_normalCase") {
     assert(ListProblems.split(3, List(1, 2, 3, 4, 5)) == (List(1, 2, 3), List(4, 5)))
   }
+
+  test("slice_empty") {
+    assert(ListProblems.slice(3, 5, Nil) == Nil)
+  }
+
+  test("slice_overlappingIndices") {
+    assert(ListProblems.slice(5, 3, List(0, 1, 2, 3, 4, 5)) == Nil)
+  }
+
+  test("slice_overshootsStart") {
+    assert(ListProblems.slice(-2, 3, List(0, 1, 2, 3, 4, 5)) == List(0, 1, 2))
+  }
+
+  test("slice_overshootsEnd") {
+    assert(ListProblems.slice(3, 7, List(0, 1, 2, 3, 4, 5)) == List(3, 4, 5))
+  }
+
+  test("slice_validIndices") {
+    assert(ListProblems.slice(3, 5, List(0, 1, 2, 3, 4, 5)) == List(3, 4))
+  }
+
+  test("rotate_emptyList") {
+    assert(ListProblems.rotate(2, Nil) == Nil)
+  }
+
+  test("rotate_zero") {
+    assert(ListProblems.rotate(0, List(1, 2, 3, 4, 5)) == List(1, 2, 3, 4, 5))
+  }
+
+  test("rotate_byLength") {
+    assert(ListProblems.rotate(5, List(1, 2, 3, 4, 5)) == List(1, 2, 3, 4, 5))
+  }
+
+  test("rotate_someNumber") {
+    assert(ListProblems.rotate(2, List(1, 2, 3, 4, 5)) == List(3, 4, 5, 1, 2))
+  }
+
+  test("rotate_moreThanFullRotation") {
+    assert(ListProblems.rotate(7, List(1, 2, 3, 4, 5)) == List(3, 4, 5, 1, 2))
+  }
+
+  test("rotate_negative") {
+    assert(ListProblems.rotate(-2, List(1, 2, 3, 4, 5)) == List(4, 5, 1, 2, 3))
+  }
+
+  test("removeAt_empty") {
+    assertThrows[IndexOutOfBoundsException](ListProblems.removeAt(3, Nil))
+  }
+
+  test("removeAt_outOfBOunds") {
+    assertThrows[IndexOutOfBoundsException](ListProblems.removeAt(5, List(1, 2, 3, 4, 5)))
+  }
+
+  test("removeAt_validRemoval") {
+    assert(ListProblems.removeAt(3, List(1, 2, 3, 4, 5)) == (List(1, 2, 3, 5), 4))
+  }
+
+  test("insertAt_emptyList") {
+    assert(ListProblems.insertAt("Hello", 3, Nil) == List("Hello"))
+  }
+
+  test("insertAt_overshoot") {
+    assert(ListProblems.insertAt(5, 10, List(1, 2, 3, 4)) == List(1, 2, 3, 4, 5))
+  }
+
+  test("insertAt_undershoot") {
+    assert(ListProblems.insertAt(1, -10, List(2, 3, 4, 5)) == List(1, 2, 3, 4, 5))
+  }
+
+  test("insertAt_middle") {
+    assert(ListProblems.insertAt(3, 2, List(1, 2, 4, 5)) == List(1, 2, 3, 4, 5))
+  }
+
+  test("range_overlapping") {
+    assert(ListProblems.range(3, 2) == Nil)
+  }
+
+  test("range_single") {
+    assert(ListProblems.range(3, 3) == List(3))
+  }
+
+  test("range_sensible") {
+    assert(ListProblems.range(2, 5) == List(2, 3, 4, 5))
+  }
+
+  test("range_negative") {
+    assert(ListProblems.range(-2, 2) == List(-2, -1, 0, 1, 2))
+  }
+
+  test("randomSelect_empty") {
+    assert(ListProblems.randomSelect(3, Nil) == Nil)
+  }
+
+  test("randomSelect_none") {
+    assert(ListProblems.randomSelect(0, List(1, 2, 3)) == Nil)
+  }
+
+  test("randomSelect_lessThanZero") {
+    assert(ListProblems.randomSelect(-2, List(1, 2, 3)) == Nil)
+  }
+
+  test("randomSelect_tooSmall") {
+    assert(ListProblems.randomSelect(5, List(1, 2, 3)).length == 3)
+  }
+
+  test("randomSelect_justRight") {
+    assert(ListProblems.randomSelect(3, List(1, 2, 3, 4, 5)).length == 3)
+  }
 }
