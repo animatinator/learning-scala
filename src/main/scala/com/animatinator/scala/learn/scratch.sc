@@ -396,3 +396,32 @@ printStream(fib)(20)
 val fib3 : Stream[Int] = 1 #:: 1 #:: 2 #:: fib3.zip(fib3.tail).map {n => n._1 + n._2}.zip(fib3.tail.tail).map { n => n._1 + n._2}
 
 printStream(fib3)(20)
+
+// Fun extension methods class for lists. Adds a toStream method which already existed.
+object ExtendedList {
+  class ExtendedList[T](list : List[T]) {
+    def toAStream: Stream[T] = list match {
+      case x :: xs => x #:: xs.toStream
+      case Nil => Stream.empty[T]
+    }
+  }
+
+  implicit def extendThatList[T](list : List[T]): ExtendedList[T] = new ExtendedList(list)
+}
+
+object ExtendedStream {
+  class ExtendedStream[T](stream : Stream[T]) {
+    def zip3(second : Stream[T], third : Stream[T]) : Stream[(T, T, T)] =
+      stream.zip(second).zip(third) map {case ((a, b), c) => (a, b, c)}
+  }
+
+  implicit def extendStream[T](stream : Stream[T]) : ExtendedStream[T] = new ExtendedStream[T](stream)
+}
+
+import ExtendedList.extendThatList
+
+val stream : Stream[Int] = List(1, 1, 2).toAStream
+
+import ExtendedStream._
+
+stream.zip3(stream, stream)
