@@ -329,4 +329,25 @@ class ListProblemsTest extends FunSuite {
     val numbers = ListProblems.randomPermute(original)
     assert(numbers forall {original contains})
   }
+
+  test("combinations_simple") {
+    assert(ListProblems.combinations(2, List(1, 2, 3)) == List(List(1, 2), List(1, 3), List(2, 3)))
+  }
+
+  test("lsort_empty") {
+    assert(ListProblems.lsort(List()) == List())
+  }
+
+  test("lsort_someLists") {
+    assert(ListProblems.lsort(
+      List(List(1, 2, 3, 4), List(1, 2), List(1, 2, 3), List(1)))
+      == List(List(1), List(1, 2), List(1, 2, 3), List(1, 2, 3, 4)))
+  }
+
+  test("lsortFreq_someLists") {
+    val sorted = ListProblems.lsortFreq(
+      List(List('a, 'b, 'c), List('d, 'e), List('f, 'g, 'h), List('d, 'e), List('i, 'j, 'k, 'l), List('m, 'n), List('o)))
+    assert(sorted ==
+      List(List('i, 'j, 'k, 'l), List('o), List('a, 'b, 'c), List('f, 'g, 'h), List('d, 'e), List('d, 'e), List('m, 'n)))
+  }
 }

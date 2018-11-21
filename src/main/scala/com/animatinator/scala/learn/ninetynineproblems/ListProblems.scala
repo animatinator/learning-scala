@@ -133,4 +133,25 @@ object ListProblems {
   def lotto(num : Int, max : Int) : List[Int] = randomSelect(num, range(1, max))
 
   def randomPermute[T](list : List[T]) : List[T] = randomSelect(list.length, list)
+
+  def combinations[T](num : Int, list : List[T]) : List[List[T]] = {
+    def flatMapSublists[A, B](ls : List[A])(f : List[A] => List[B]) : List[B] = ls match {
+      case Nil => Nil
+      case subList@_ :: tail => f(subList) ::: flatMapSublists(tail)(f)
+    }
+
+    num match {
+      case 0 => List(Nil)
+      case n => flatMapSublists(list){ls => combinations(n - 1, ls.tail) map {ls.head :: _}}
+    }
+  }
+
+  // TODO: P27, group3 and group
+
+  def lsort[T](list : List[List[T]]) : List[List[T]] = list.sortWith((l1, l2) => l1.length < l2.length)
+
+  def lsortFreq[T](list : List[List[T]]) : List[List[T]] = {
+    val frequenciesMap = list.groupBy[Int](ls => ls.length) map {pair => (pair._1, pair._2.length)}
+    list.sortWith((l1, l2) => frequenciesMap(l1.length) < frequenciesMap(l2.length))
+  }
 }

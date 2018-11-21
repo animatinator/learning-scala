@@ -377,3 +377,6 @@ sillyTime match {
   case LongTime() => println("sillyTime is a long time")
   case _ => println("Matching didn't work properly")
 }
+
+val groupList = List(List(1, 2, 3, 4, 5), List(2, 3, 4, 5, 6), List(2), List(1, 2))
+groupList.groupBy[Int](ls => ls.length) map {pair => (pair._1, pair._2.length)}
