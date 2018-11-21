@@ -380,3 +380,19 @@ sillyTime match {
 
 val groupList = List(List(1, 2, 3, 4, 5), List(2, 3, 4, 5, 6), List(2), List(1, 2))
 groupList.groupBy[Int](ls => ls.length) map {pair => (pair._1, pair._2.length)}
+
+
+def printStream[T](stream : Stream[T])(num : Int): Unit =
+  stream take num foreach {x => print(x); print(", ")}
+
+val squaresStream = Stream.from(1) map (x => x*x)
+printStream(squaresStream)(20)
+squaresStream.zip(squaresStream.tail) take 20
+
+val fib : Stream[Int] = 1 #:: 1 #:: fib.zip(fib.tail).map {n => n._1 + n._2}
+
+printStream(fib)(20)
+
+val fib3 : Stream[Int] = 1 #:: 1 #:: 2 #:: fib3.zip(fib3.tail).map {n => n._1 + n._2}.zip(fib3.tail.tail).map { n => n._1 + n._2}
+
+printStream(fib3)(20)
