@@ -146,7 +146,15 @@ object ListProblems {
     }
   }
 
-  // TODO: P27, group3 and group
+  def group3[T](list : List[T]) : List[List[List[T]]] = {
+    for {
+      a <- combinations(2, list)
+      noA = list diff a
+      b <- combinations(3, noA)
+    } yield List(a, b, noA diff b)
+  }
+
+  // TODO: P27's group
 
   def lsort[T](list : List[List[T]]) : List[List[T]] = list.sortWith((l1, l2) => l1.length < l2.length)
 
