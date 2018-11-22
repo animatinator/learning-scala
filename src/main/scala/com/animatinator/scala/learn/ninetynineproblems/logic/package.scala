@@ -1,5 +1,7 @@
 package com.animatinator.scala.learn.ninetynineproblems
 
+import scala.collection.mutable
+
 package object logic {
   class EnhancedBoolean(x : Boolean) {
     def and(y : Boolean): Boolean = Logic.and(x, y)
@@ -54,6 +56,44 @@ package object logic {
       case _ =>
         val inner = gray(n - 1)
         (inner map {false :: _}) ::: (inner.reverse map {true :: _})
+    }
+
+    abstract sealed class HuffmanTree extends Ordered[HuffmanTree] {
+      def frequency : Int
+      override def compare(that: HuffmanTree): Int = that.frequency - this.frequency
+    }
+
+    case class HuffmanLeaf(value : String, frequency : Int) extends HuffmanTree
+
+    case class HuffmanNode(left : HuffmanTree, right : HuffmanTree) extends HuffmanTree {
+      override def frequency: Int = left. frequency + right.frequency
+    }
+
+    def toHuffmanPriorityQueue(input : List[(String, Int)]) : mutable.PriorityQueue[HuffmanTree] = {
+      val result = mutable.PriorityQueue[HuffmanTree]()
+      input map { value => HuffmanLeaf(value._1, value._2)} foreach {result.enqueue(_)}
+      result
+    }
+
+    def huffman(input : List[(String, Int)]) : List[(String, String)] = {
+      def buildHuffmanTree(queue : mutable.PriorityQueue[HuffmanTree]) : HuffmanTree = {
+        if (queue.length == 1) queue.dequeue()
+        else {
+          queue.enqueue(HuffmanNode(queue.dequeue(), queue.dequeue()))
+          buildHuffmanTree(queue)
+        }
+      }
+
+      def generateCodesFromTree(tree : HuffmanTree) : List[(String, String)] = {
+        def generateInner(tree : HuffmanTree, currentCode : String) : List[(String, String)] = tree match {
+          case HuffmanLeaf(v, _) => List((v, currentCode))
+          case HuffmanNode(t1, t2) => generateInner(t1, currentCode + "0") ::: generateInner(t2, currentCode + "1")
+        }
+
+        generateInner(tree, "")
+      }
+
+      generateCodesFromTree(buildHuffmanTree(toHuffmanPriorityQueue(input))) sortWith {_._1 < _._1}
     }
   }
 }
