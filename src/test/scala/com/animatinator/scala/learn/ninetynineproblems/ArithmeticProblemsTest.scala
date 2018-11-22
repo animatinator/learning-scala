@@ -19,23 +19,23 @@ class ArithmeticProblemsTest extends FunSuite {
   }
 
   test("gcd_equal") {
-    assert(ArithmeticProblems.gcd(7, 7) == 7)
+    assert(S99Int.gcd(7, 7) == 7)
   }
 
   test("gcd_greatest") {
-    assert(ArithmeticProblems.gcd(8, 4) == 4)
+    assert(S99Int.gcd(8, 4) == 4)
   }
 
   test("gcd_trickier") {
-    assert(ArithmeticProblems.gcd(36, 40) == 4)
+    assert(S99Int.gcd(36, 40) == 4)
   }
 
   test("gcd_coprime") {
-    assert(ArithmeticProblems.gcd(37, 40) == 1)
+    assert(S99Int.gcd(37, 40) == 1)
   }
 
   test("gcd_secondMultipleOfFirst") {
-    assert(ArithmeticProblems.gcd(4, 8) == 4)
+    assert(S99Int.gcd(4, 8) == 4)
   }
 
   test("isCoprimeTo_notCoprime") {
@@ -91,6 +91,14 @@ class ArithmeticProblemsTest extends FunSuite {
   }
 
   test("listPrimesInRange") {
-    assert(ArithmeticProblems.listPrimesInRange(7 to 31) == List(7, 11, 13, 17, 19, 23, 29, 31))
+    assert(S99Int.listPrimesInRange(7 to 31) == List(7, 11, 13, 17, 19, 23, 29, 31))
+  }
+
+  test("goldbach_28") {
+    assert(28.goldbach == (5, 23))
+  }
+
+  test("printGoldbackList") {
+    S99Int.printGoldbachList(9 to 20)
   }
 }
