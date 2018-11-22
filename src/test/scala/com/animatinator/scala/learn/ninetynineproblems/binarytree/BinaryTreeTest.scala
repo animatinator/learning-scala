@@ -67,4 +67,15 @@ class BinaryTreeTest extends FunSuite {
         Node("b")))
     assert(!tree.isSymmetric)
   }
+
+  test("isSymmetric_ignoresNodeValues") {
+    val tree =Node("x",
+      Node("a",
+        Node("b"),
+        Node("c")),
+      Node("d",
+        Node("e"),
+        Node("f")))
+    assert(tree.isSymmetric)
+  }
 }
