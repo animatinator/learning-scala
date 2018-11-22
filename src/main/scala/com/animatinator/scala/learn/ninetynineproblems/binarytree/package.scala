@@ -6,6 +6,11 @@ package binarytree {
     def reflect : Tree[T]
     def isMirrorImage[V](other : Tree[V]) : Boolean
     def isSymmetric : Boolean
+
+    def addValue[U >: T](value : U)(implicit ord: U => Ordered[U]) : Tree[U] = this match {
+      case End => Node(value)
+      case Node(v, l, r) => if (value < v) Node(v, l.addValue(value), r) else Node(v, l, r.addValue(value))
+    }
   }
 
   case class Node[+T](value: T, left: Tree[T], right: Tree[T]) extends Tree[T] {
@@ -51,6 +56,22 @@ package binarytree {
             val smallerSubtrees : List[Tree[T]] = cBalanced(x / 2 - 1, value)
             smallerSubtrees.flatMap(l => largerSubtrees.flatMap(r => List(Node(value, l, r), Node(value, r, l))))
         }
+      }
+
+    def fromList[T](list : List[T])(implicit ord: T => Ordered[T]) : Tree[T] =
+      list.foldLeft[Tree[T]](End){_.addValue(_)}
+
+    def symmetricBalancedTrees[T](nodes : Int, value : T): List[Tree[T]] =
+      cBalanced(nodes, value) filter {_.isSymmetric}
+
+    def hbalTrees[T](height : Int, value : T) : List[Tree[T]] =
+      if (height == 0) List(End)
+      else if (height == 1) List(Node(value))
+      else {
+        val bigSubtrees : List[Tree[T]] = hbalTrees(height - 1, value)
+        val smallSubtrees : List[Tree[T]] = hbalTrees(height - 2, value)
+        bigSubtrees.flatMap(l => bigSubtrees.flatMap(r => List(Node(value, l, r)))) :::
+        bigSubtrees.flatMap(l => smallSubtrees.flatMap(r => List(Node(value, l, r), Node(value, r, l))))
       }
   }
 }
