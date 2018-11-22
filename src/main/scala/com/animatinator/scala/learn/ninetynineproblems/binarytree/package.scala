@@ -7,6 +7,10 @@ package binarytree {
     def isMirrorImage[V](other : Tree[V]) : Boolean
     def isSymmetric : Boolean
     def size : Int
+    def leafCount : Int
+    def leafList : List[T]
+    def internalList : List[T]
+    def atLevel(level : Int) : List[T]
 
     def addValue[U >: T](value : U)(implicit ord: U => Ordered[U]) : Tree[U] = this match {
       case End => Node(value)
@@ -23,6 +27,26 @@ package binarytree {
     }
     override def isSymmetric : Boolean = left.isMirrorImage(right)
     override def size: Int = 1 + left.size + right.size
+
+    override def leafCount : Int = this match {
+      case Node(_, End, End) => 1
+      case Node(_, l, r) => l.leafCount + r.leafCount
+    }
+
+    override def leafList: List[T] = this match {
+      case Node(_, End, End) => List(value)
+      case Node(_, l, r) => l.leafList ::: r.leafList
+    }
+
+    override def internalList: List[T] = this match {
+      case Node(_, End, End) => Nil
+      case Node(v, l, r) => v :: l.internalList ::: r.internalList
+    }
+
+    override def atLevel(level: Int): List[T] = {
+      if (level == 1) List(value)
+      else left.atLevel(level - 1) ::: right.atLevel(level - 1)
+    }
   }
 
   case object End extends Tree[Nothing] {
@@ -31,6 +55,10 @@ package binarytree {
     override def isMirrorImage[V](other: Tree[V]): Boolean = other == End
     override def isSymmetric: Boolean = true
     override def size = 0
+    override def leafCount = 0
+    override def leafList: List[Nothing] = Nil
+    override def internalList: List[Nothing] = Nil
+    override def atLevel(level : Int): List[Nothing] = Nil
   }
 
   object Node {

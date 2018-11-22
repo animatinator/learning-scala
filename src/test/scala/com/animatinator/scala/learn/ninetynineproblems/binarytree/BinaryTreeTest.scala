@@ -176,4 +176,51 @@ class BinaryTreeTest extends FunSuite {
   test("hbalTreesWithNodes_15") {
     assert(Tree.hbalTreesWithNodes(15, "x").length == 1553)
   }
+
+  test("leafCount_empty") {
+    assert(End.leafCount == 0)
+  }
+
+  test("leafCount_singleNode") {
+    assert(Node("x").leafCount == 1)
+  }
+
+  test("leafCount_example") {
+    assert(Node('x', Node('x'), End).leafCount == 1)
+  }
+
+  test("leafCount_bigger") {
+    assert(Node('x', Node('x', Node("y"), Node("z")), Node("p")).leafCount == 3)
+  }
+
+  test("leafList_empty") {
+    assert(End.leafList == Nil)
+  }
+
+  test("leafList_singleNode") {
+    assert(Node("x").leafList == List("x"))
+  }
+
+  test("leafList_example") {
+    assert(Node('a', Node('b'), Node('c', Node('d'), Node('e'))).leafList == List('b', 'd', 'e'))
+  }
+
+  test("internalList_empty") {
+    assert(End.internalList == Nil)
+  }
+
+  test("internalList_singleNode") {
+    assert(Node("x").internalList == Nil)
+  }
+
+  test("internalList_example") {
+    assert(Node('a', Node('b'), Node('c', Node('d'), Node('e'))).internalList == List('a', 'c'))
+  }
+
+  test("atLevel_example") {
+    val tree = Node('a', Node('b'), Node('c', Node('d'), Node('e')))
+    assert(tree.atLevel(1) == List('a'))
+    assert(tree.atLevel(2) == List('b', 'c'))
+    assert(tree.atLevel(3) == List('d', 'e'))
+  }
 }
