@@ -6,6 +6,7 @@ package binarytree {
     def reflect : Tree[T]
     def isMirrorImage[V](other : Tree[V]) : Boolean
     def isSymmetric : Boolean
+    def size : Int
 
     def addValue[U >: T](value : U)(implicit ord: U => Ordered[U]) : Tree[U] = this match {
       case End => Node(value)
@@ -21,6 +22,7 @@ package binarytree {
       case _ => false
     }
     override def isSymmetric : Boolean = left.isMirrorImage(right)
+    override def size: Int = 1 + left.size + right.size
   }
 
   case object End extends Tree[Nothing] {
@@ -28,6 +30,7 @@ package binarytree {
     override def reflect : Tree[Nothing] = End
     override def isMirrorImage[V](other: Tree[V]): Boolean = other == End
     override def isSymmetric: Boolean = true
+    override def size = 0
   }
 
   object Node {
@@ -73,5 +76,22 @@ package binarytree {
         bigSubtrees.flatMap(l => bigSubtrees.flatMap(r => List(Node(value, l, r)))) :::
         bigSubtrees.flatMap(l => smallSubtrees.flatMap(r => List(Node(value, l, r), Node(value, r, l))))
       }
+
+    def maxHbalNodes(height : Int) : Int = Math.pow(2, height).toInt - 1
+
+    def minHbalNodes(height : Int) : Int = {
+      if (height == 0) 0
+      else if (height == 1) 1
+      else {
+        minHbalNodes(height - 1) + minHbalNodes(height - 2) + 1
+      }
+    }
+
+    def minHbalHeight(nodes : Int): Int = Stream from 1 dropWhile {maxHbalNodes(_) < nodes} head
+
+    def maxHbalHeight(nodes : Int): Int = Stream from 1 takeWhile {minHbalNodes(_) <= nodes} last
+
+    def hbalTreesWithNodes[T](nodes : Int, value : T) : List[Tree[T]] =
+      (minHbalHeight(nodes) to maxHbalHeight(nodes)) flatMap {hbalTrees(_, value)} filter {_.size == nodes} toList
   }
 }

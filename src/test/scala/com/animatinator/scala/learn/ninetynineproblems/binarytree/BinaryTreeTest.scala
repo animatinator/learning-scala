@@ -134,4 +134,46 @@ class BinaryTreeTest extends FunSuite {
     assert(possibleTrees.toString startsWith
       "List(T(x T(x T(x . .) T(x . .)) T(x T(x . .) T(x . .))), T(x T(x T(x . .) T(x . .)) T(x T(x . .) .)),")
   }
+
+  test("minHbalNodes_example") {
+    assert(Tree.minHbalNodes(3) == 4)
+  }
+
+  test("maxHbalHeight_example") {
+    assert(Tree.maxHbalHeight(4) == 3)
+  }
+
+  test("minHbalHeight_boundary_2_3") {
+    assert(Tree.minHbalHeight(3) == 2)
+    assert(Tree.minHbalHeight(4) == 3)
+  }
+
+  test("minHbalHeight_boundary_3_4") {
+    assert(Tree.minHbalHeight(7) == 3)
+    assert(Tree.minHbalHeight(8) == 4)
+  }
+
+  test("size_empty") {
+    assert(End.size == 0)
+  }
+
+  test("size_singleNode") {
+    assert(Node("x").size == 1)
+  }
+
+  test("size_fewNodes") {
+    assert(Node("x", Node("a"), Node("b")).size == 3)
+  }
+
+  test("hbalTreesWithNodes_3") {
+    assert(Tree.hbalTreesWithNodes(3, "x").length == 1)
+  }
+
+  test("hbalTreesWithNodes_5") {
+    assert(Tree.hbalTreesWithNodes(5, "x").length == 6)
+  }
+
+  test("hbalTreesWithNodes_15") {
+    assert(Tree.hbalTreesWithNodes(15, "x").length == 1553)
+  }
 }
