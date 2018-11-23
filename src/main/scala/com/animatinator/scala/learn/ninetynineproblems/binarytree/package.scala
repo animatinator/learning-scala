@@ -121,5 +121,16 @@ package binarytree {
 
     def hbalTreesWithNodes[T](nodes : Int, value : T) : List[Tree[T]] =
       (minHbalHeight(nodes) to maxHbalHeight(nodes)) flatMap {hbalTrees(_, value)} filter {_.size == nodes} toList
+
+    def completeBinaryTree[T](nodes : Int, value : T) : Tree[T] = {
+      def leftChildIndex(index : Int) = index * 2
+      def rightChildIndex(index : Int) = index * 2 + 1
+
+      def treeFromList(rootIndex : Int) : Tree[T] =
+        if (rootIndex > nodes) End
+        else Node(value, treeFromList(leftChildIndex(rootIndex)), treeFromList(rightChildIndex(rootIndex)))
+
+      treeFromList(1)
+    }
   }
 }

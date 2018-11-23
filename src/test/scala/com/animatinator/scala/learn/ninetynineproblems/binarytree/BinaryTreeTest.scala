@@ -223,4 +223,20 @@ class BinaryTreeTest extends FunSuite {
     assert(tree.atLevel(2) == List('b', 'c'))
     assert(tree.atLevel(3) == List('d', 'e'))
   }
+
+  test("completeBinaryTree_empty") {
+    assert(Tree.completeBinaryTree(0, "x") == End)
+  }
+
+  test("completeBinaryTree_singleNode") {
+    assert(Tree.completeBinaryTree(1, "x") == Node("x"))
+  }
+
+  test("completeBinaryTree_threeNodes") {
+    assert(Tree.completeBinaryTree(3, "x") == Node("x", Node("x"), Node("x")))
+  }
+
+  test("completeBinaryTree_fiveNodes") {
+    assert(Tree.completeBinaryTree(5, "x") == Node("x", Node("x", Node("x"), Node("x")), Node("x")))
+  }
 }
