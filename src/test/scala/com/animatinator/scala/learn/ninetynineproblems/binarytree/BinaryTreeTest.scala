@@ -4,6 +4,9 @@ import org.scalatest.FunSuite
 
 
 class BinaryTreeTest extends FunSuite {
+
+  val smallishTestTree = Node('a', Node('b'), Node('c', Node('d'), Node('e')))
+
   test("cbalanced_singleNode") {
     assert(Tree.cBalanced(1, "x") == List(Node("x")))
   }
@@ -202,7 +205,7 @@ class BinaryTreeTest extends FunSuite {
   }
 
   test("leafList_example") {
-    assert(Node('a', Node('b'), Node('c', Node('d'), Node('e'))).leafList == List('b', 'd', 'e'))
+    assert(smallishTestTree.leafList == List('b', 'd', 'e'))
   }
 
   test("internalList_empty") {
@@ -214,14 +217,13 @@ class BinaryTreeTest extends FunSuite {
   }
 
   test("internalList_example") {
-    assert(Node('a', Node('b'), Node('c', Node('d'), Node('e'))).internalList == List('a', 'c'))
+    assert(smallishTestTree.internalList == List('a', 'c'))
   }
 
   test("atLevel_example") {
-    val tree = Node('a', Node('b'), Node('c', Node('d'), Node('e')))
-    assert(tree.atLevel(1) == List('a'))
-    assert(tree.atLevel(2) == List('b', 'c'))
-    assert(tree.atLevel(3) == List('d', 'e'))
+    assert(smallishTestTree.atLevel(1) == List('a'))
+    assert(smallishTestTree.atLevel(2) == List('b', 'c'))
+    assert(smallishTestTree.atLevel(3) == List('d', 'e'))
   }
 
   test("completeBinaryTree_empty") {
@@ -287,5 +289,62 @@ class BinaryTreeTest extends FunSuite {
           End,
           12, 2),
         8, 1).toString)
+  }
+
+  test("height_empty") {
+    assert(End.height == 0)
+  }
+
+  test("height_singleNode") {
+    assert(Node("x").height == 1)
+  }
+
+  test("height_example") {
+    assert(smallishTestTree.height == 3)
+  }
+
+  test("heightOfLeftmostPoint_empty") {
+    assert(End.heightOfLeftmostPoint == 0)
+  }
+
+  test("heightOfLeftmostPoint_singleNode") {
+    assert(Node("x").heightOfLeftmostPoint == 1)
+  }
+
+  test("heightOfLeftmostPoint_example") {
+    assert(smallishTestTree.heightOfLeftmostPoint == 2)
+  }
+
+  test("heightOfLeftmostPoint_bigRightwardsTree") {
+    val sillyTree = Node("a", End, Node("b", End, Node("c", End, Node("d"))))
+    assert(sillyTree.heightOfLeftmostPoint == 1)
+  }
+
+  test("layoutBinaryTree2_empty") {
+    assert(End.layoutBinaryTree2 == End)
+  }
+
+  test("layoutBinaryTree2_singleNode") {
+    assert(Node("x").layoutBinaryTree2 == PositionedNode("x", End, End, 1, 1))
+  }
+
+  test("layoutBinaryTree2_threeNodes") {
+    assert(Node("x", Node("l"), Node("r")).layoutBinaryTree2 ==
+      PositionedNode("x",
+        PositionedNode("l", End, End, 1, 2),
+        PositionedNode("r", End, End, 3, 2),
+        2, 1))
+  }
+
+  test("layoutBinaryTree2_example") {
+    val expectedSmallishTestTreeLayout =
+      PositionedNode('a',
+        PositionedNode('b', End, End, 1, 2),
+        PositionedNode('c',
+          PositionedNode('d', End, End, 4, 3),
+          PositionedNode('e', End, End, 6, 3),
+          5, 2),
+        3, 1)
+    assert(smallishTestTree.layoutBinaryTree2 == expectedSmallishTestTreeLayout)
   }
 }

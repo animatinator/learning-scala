@@ -11,6 +11,8 @@ package binarytree {
     def leafList : List[T]
     def internalList : List[T]
     def atLevel(level : Int) : List[T]
+    def height : Int
+    def heightOfLeftmostPoint : Int
 
     def addValue[U >: T](value : U)(implicit ord: U => Ordered[U]) : Tree[U] = this match {
       case End => Node(value)
@@ -19,6 +21,10 @@ package binarytree {
 
     def layoutBinaryTree : Tree[T] = layoutBinaryTreeInternal(1, 1)._1
     def layoutBinaryTreeInternal(nextX : Int, y : Int) : (Tree[T], Int)
+    def layoutBinaryTree2 : Tree[T] = {
+      layoutBinaryTreeInternal2(Math.pow(2, heightOfLeftmostPoint).toInt, 1, Math.pow(2, height - 1).toInt)
+    }
+    def layoutBinaryTreeInternal2(xPosition : Int, height : Int, spacing : Int) : Tree[T]
   }
 
   // This would be a case class but we need PositionedNode to extend it. It is therefore an abstract class and the
@@ -53,10 +59,21 @@ package binarytree {
       else left.atLevel(level - 1) ::: right.atLevel(level - 1)
     }
 
+    override def height: Int = 1 + Math.max(left.height, right.height)
+
+    override def heightOfLeftmostPoint : Int = left.heightOfLeftmostPoint + 1
+
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[T], Int) = {
       val (laidOutLeft, thisX) = left.layoutBinaryTreeInternal(nextX, y + 1)
       val (laidOutRight, finalLeft) = right.layoutBinaryTreeInternal(thisX + 1, y + 1)
       (PositionedNode(value, laidOutLeft, laidOutRight, thisX, y), finalLeft)
+    }
+
+    override def layoutBinaryTreeInternal2(xPosition: Int, height : Int, spacing: Int): Tree[T] = {
+      PositionedNode(value,
+        left.layoutBinaryTreeInternal2(xPosition - spacing, height + 1, spacing / 2),
+        right.layoutBinaryTreeInternal2(xPosition + spacing, height + 1, spacing / 2),
+        xPosition, height)
     }
 
     override def equals(obj: scala.Any): Boolean = obj match {
@@ -84,7 +101,10 @@ package binarytree {
     override def leafList: List[Nothing] = Nil
     override def internalList: List[Nothing] = Nil
     override def atLevel(level : Int): List[Nothing] = Nil
+    override def height : Int = 0
+    override def heightOfLeftmostPoint : Int = 0
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[Nothing], Int) = (End, nextX)
+    override def layoutBinaryTreeInternal2(xPosition: Int, height: Int, spacing: Int): Tree[Nothing] = End
   }
 
   object Node {
