@@ -16,9 +16,14 @@ package binarytree {
       case End => Node(value)
       case Node(v, l, r) => if (value < v) Node(v, l.addValue(value), r) else Node(v, l, r.addValue(value))
     }
+
+    def layoutBinaryTree : Tree[T] = layoutBinaryTreeInternal(1, 1)._1
+    def layoutBinaryTreeInternal(nextX : Int, y : Int) : (Tree[T], Int)
   }
 
-  case class Node[+T](value: T, left: Tree[T], right: Tree[T]) extends Tree[T] {
+  // This would be a case class but we need PositionedNode to extend it. It is therefore an abstract class and the
+  // companion object implements apply and unapply to allow us to use it as though it were a case class.
+  class Node[+T](val value: T, val left: Tree[T], val right: Tree[T]) extends Tree[T] {
     override def toString: String = "T(" + value.toString + " " + left.toString + " " + right.toString + ")"
     override def reflect : Node[T] = Node(value, right.reflect, left.reflect)
     override def isMirrorImage[V](other : Tree[V]): Boolean = other match {
@@ -47,6 +52,26 @@ package binarytree {
       if (level == 1) List(value)
       else left.atLevel(level - 1) ::: right.atLevel(level - 1)
     }
+
+    override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[T], Int) = {
+      val (laidOutLeft, thisX) = left.layoutBinaryTreeInternal(nextX, y + 1)
+      val (laidOutRight, finalLeft) = right.layoutBinaryTreeInternal(thisX + 1, y + 1)
+      (PositionedNode(value, laidOutLeft, laidOutRight, thisX, y), finalLeft)
+    }
+
+    override def equals(obj: scala.Any): Boolean = obj match {
+      case obj : Node[T] => obj.value == value && obj.left == left && obj.right == right
+      case _ => false
+    }
+  }
+
+  case class PositionedNode[+T](override val value: T,
+                                override val left: Tree[T],
+                                override val right: Tree[T],
+                                x: Int,
+                                y: Int) extends Node[T](value, left, right) {
+    override def toString : String =
+      "T[" + x.toString + "," + y.toString + "](" + value.toString + " " + left.toString + " " + right.toString + ")"
   }
 
   case object End extends Tree[Nothing] {
@@ -59,10 +84,13 @@ package binarytree {
     override def leafList: List[Nothing] = Nil
     override def internalList: List[Nothing] = Nil
     override def atLevel(level : Int): List[Nothing] = Nil
+    override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[Nothing], Int) = (End, nextX)
   }
 
   object Node {
-    def apply[T](value: T): Node[T] = Node(value, End, End)
+    def apply[T](value: T): Node[T] = new Node(value, End, End)
+    def apply[T](value : T, l : Tree[T], r : Tree[T]) = new Node(value, l, r)
+    def unapply[U] (node: Node[U]) : Option[(U, Tree[U], Tree[U])] = Some((node.value, node.left, node.right))
   }
 
   object Even {

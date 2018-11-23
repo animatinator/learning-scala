@@ -239,4 +239,53 @@ class BinaryTreeTest extends FunSuite {
   test("completeBinaryTree_fiveNodes") {
     assert(Tree.completeBinaryTree(5, "x") == Node("x", Node("x", Node("x"), Node("x")), Node("x")))
   }
+
+  test("layoutBinaryTree_empty") {
+    assert(End.layoutBinaryTree == End)
+  }
+
+  test("layoutBinaryTree_singleNode") {
+    assert(Node("x").layoutBinaryTree == PositionedNode("x", End, End, 1, 1))
+  }
+
+  test("layoutBinaryTree_example") {
+    assert(
+      Node('a', Node('b', End, Node('c')), Node('d')).layoutBinaryTree.toString ==
+        "T[3,1](a T[1,2](b . T[2,3](c . .)) T[4,2](d . .))")
+  }
+
+  test("layoutBinaryTree_complex") {
+    val laidOutTree = Tree.fromList(List('n','k','m','c','a','h','g','e','u','p','s','q')).layoutBinaryTree
+    // TODO: Doing a string comparison because normal comparison fails. Unclear why.
+    assert(laidOutTree.toString ==
+      PositionedNode("n",
+        PositionedNode("k",
+          PositionedNode("c",
+            PositionedNode("a", End, End,
+              1, 4),
+            PositionedNode("h",
+              PositionedNode("g",
+                PositionedNode("e", End, End,
+                  3, 6),
+                End,
+                4, 5),
+              End,
+              5, 4),
+            2, 3),
+          PositionedNode("m", End, End,
+            7, 3),
+          6, 2),
+        PositionedNode("u",
+          PositionedNode("p",
+            End,
+            PositionedNode("s",
+              PositionedNode("q", End, End,
+                10, 5),
+              End,
+              11, 4),
+            9, 3),
+          End,
+          12, 2),
+        8, 1).toString)
+  }
 }
