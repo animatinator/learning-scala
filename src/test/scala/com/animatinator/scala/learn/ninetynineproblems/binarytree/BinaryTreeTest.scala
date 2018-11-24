@@ -362,9 +362,21 @@ class BinaryTreeTest extends FunSuite {
     assert(Tree.minimumDistanceBetweenTreesWithBounds(testLeftBounds, testRightBounds) == 5)
   }
 
-  test("minimuDistanceBetweenTrees_bigStickyOutBranches") {
+  test("minimumDistanceBetweenTrees_bigStickyOutBranches") {
     val testLeftBounds = List((0, 0), (1, 1), (2, 2), (3, 3))
     val testRightBounds = List((0, 0), (-1, -1), (-2, -2), (-3, -3))
     assert(Tree.minimumDistanceBetweenTreesWithBounds(testLeftBounds, testRightBounds) == 7)
+  }
+
+  test("bounds_empty") {
+    assert(End.bounds == Nil)
+  }
+
+  test("bounds_singleNode") {
+    assert(Node("x").bounds == List((0, 0)))
+  }
+
+  test("bounds_testTree") {
+    assert(smallishTestTree.bounds == List((0, 0), (-1, 1), (0, 2)))
   }
 }

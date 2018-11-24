@@ -68,7 +68,16 @@ package binarytree {
       case (Nil, Nil) => List((0, 0))
       case (leftBounds, Nil) => (0, 0) :: (leftBounds map {case (l, r) => (l - 1, r - 1)})
       case (Nil, rightBounds) => (0, 0) :: rightBounds map {case (l, r) => (l + 1, r + 1)}
-      case (leftBounds, rightBounds) => Nil // TODO(DO NOT SUBMIT): Finish.
+      case (leftBounds, rightBounds) =>
+        val minimumDistance = Tree.minimumDistanceBetweenTreesWithBounds(leftBounds, rightBounds)
+        println("Merging trees: [[%s]], [[%s]]".format(left, right))
+        println("Their bounds: [[%s]], [[%s]]".format(leftBounds, rightBounds))
+        println("Minimum separation: "+minimumDistance)
+        val shiftFactor = (minimumDistance + 1) / 2 // Round up
+        // TODO: The problem is that zip doesn't fill in gaps if one has fewer elements. Need to fix.
+        val bounds = (0, 0) :: (leftBounds zip rightBounds).map{case (l, r) => (l._1 - shiftFactor, r._2 + shiftFactor)}
+        println("Bounds: " + bounds)
+        bounds
     }
 
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[T], Int) = {
@@ -197,7 +206,7 @@ package binarytree {
     // * Bounds for T (T (. .) T (. .)) are List((0, 0), (-1, 1))
     // Separated out for testing.
     def minimumDistanceBetweenTreesWithBounds(leftBounds : List[(Int, Int)], rightBounds : List[(Int, Int)]) : Int = {
-      val minSpacingBetweenTrees : Int = leftBounds zip rightBounds map {case (p1, p2) => p1._2 - p2._1 + 1} max
+      val minSpacingBetweenTrees : Int = leftBounds zip rightBounds map {case (p1, p2) => p1._2 - p2._1 + 1} max;
       if (minSpacingBetweenTrees > 2) minSpacingBetweenTrees else 2
     }
   }
