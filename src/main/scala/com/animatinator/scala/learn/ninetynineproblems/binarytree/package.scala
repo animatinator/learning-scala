@@ -13,6 +13,7 @@ package binarytree {
     def atLevel(level : Int) : List[T]
     def height : Int
     def heightOfLeftmostPoint : Int
+    def bounds : List[(Int, Int)]
 
     def addValue[U >: T](value : U)(implicit ord: U => Ordered[U]) : Tree[U] = this match {
       case End => Node(value)
@@ -63,6 +64,13 @@ package binarytree {
 
     override def heightOfLeftmostPoint : Int = left.heightOfLeftmostPoint + 1
 
+    override def bounds : List[(Int, Int)] = (left.bounds, right.bounds) match {
+      case (Nil, Nil) => List((0, 0))
+      case (leftBounds, Nil) => (0, 0) :: (leftBounds map {case (l, r) => (l - 1, r - 1)})
+      case (Nil, rightBounds) => (0, 0) :: rightBounds map {case (l, r) => (l + 1, r + 1)}
+      case (leftBounds, rightBounds) => Nil // TODO(DO NOT SUBMIT): Finish.
+    }
+
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[T], Int) = {
       val (laidOutLeft, thisX) = left.layoutBinaryTreeInternal(nextX, y + 1)
       val (laidOutRight, finalLeft) = right.layoutBinaryTreeInternal(thisX + 1, y + 1)
@@ -102,6 +110,7 @@ package binarytree {
     override def internalList: List[Nothing] = Nil
     override def atLevel(level : Int): List[Nothing] = Nil
     override def height : Int = 0
+    override def bounds : List[(Int, Int)] = Nil
     override def heightOfLeftmostPoint : Int = 0
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[Nothing], Int) = (End, nextX)
     override def layoutBinaryTreeInternal2(xPosition: Int, height: Int, spacing: Int): Tree[Nothing] = End
@@ -179,6 +188,17 @@ package binarytree {
         else Node(value, treeFromList(leftChildIndex(rootIndex)), treeFromList(rightChildIndex(rootIndex)))
 
       treeFromList(1)
+    }
+
+    // Given two sets of tree bounds, find the minimum distance between the roots of those trees.
+    // Bounds are lists [(left, right)] specifying the distance of the left and right extremes at each level of the tree
+    // from the root node.
+    // * Bounds for a single node are List((0, 0)).
+    // * Bounds for T (T (. .) T (. .)) are List((0, 0), (-1, 1))
+    // Separated out for testing.
+    def minimumDistanceBetweenTreesWithBounds(leftBounds : List[(Int, Int)], rightBounds : List[(Int, Int)]) : Int = {
+      val minSpacingBetweenTrees : Int = leftBounds zip rightBounds map {case (p1, p2) => p1._2 - p2._1 + 1} max
+      if (minSpacingBetweenTrees > 2) minSpacingBetweenTrees else 2
     }
   }
 }

@@ -347,4 +347,24 @@ class BinaryTreeTest extends FunSuite {
         3, 1)
     assert(smallishTestTree.layoutBinaryTree2 == expectedSmallishTestTreeLayout)
   }
+
+  val subTreeForLayoutTesting : Tree[Char] = Tree.fromList(List('k','m','c','a','e','d','g'))
+
+  test("minimumDistanceBetweenTrees_example") {
+    val testLeftBounds = List((0, 0), (-1, 1), (0, 2))
+    val testRightBounds = List((0, 0))
+    assert(Tree.minimumDistanceBetweenTreesWithBounds(testLeftBounds, testRightBounds) == 2)
+  }
+
+  test("minimumDistanceBetweenTrees_exampleWithStickyOutBits") {
+    val testLeftBounds = List((0, 0), (-1, 1), (0, 2))
+    val testRightBounds = List((0, 0), (-1, -1), (-2, 0))
+    assert(Tree.minimumDistanceBetweenTreesWithBounds(testLeftBounds, testRightBounds) == 5)
+  }
+
+  test("minimuDistanceBetweenTrees_bigStickyOutBranches") {
+    val testLeftBounds = List((0, 0), (1, 1), (2, 2), (3, 3))
+    val testRightBounds = List((0, 0), (-1, -1), (-2, -2), (-3, -3))
+    assert(Tree.minimumDistanceBetweenTreesWithBounds(testLeftBounds, testRightBounds) == 7)
+  }
 }
