@@ -125,17 +125,18 @@ class BinaryTreeTest extends FunSuite {
 
   test("symmetricBalancedTrees_example") {
     val possibleTrees : List[Tree[String]] = Tree.symmetricBalancedTrees(5, "x")
-    assert(possibleTrees.toString() ==
-      "List(T(x T(x . T(x . .)) T(x T(x . .) .)), T(x T(x T(x . .) .) T(x . T(x . .))))")
+    assert(possibleTrees ==
+      List(Node("x", Node("x", End, Node("x")), Node("x", Node("x"), End)),
+      Node("x", Node("x", Node("x"), End), Node("x", End, Node("x")))))
   }
 
   test("hbalTrees_example") {
     val possibleTrees = Tree.hbalTrees(3, "x")
     assert(possibleTrees.length == 15)
-    // Yeah, I know, but this is what was listed (http://aperiodic.net/phil/scala/s-99/ P59) and I don't feel like
-    // working out exactly what the fifteen possibilities should be.
-    assert(possibleTrees.toString startsWith
-      "List(T(x T(x T(x . .) T(x . .)) T(x T(x . .) T(x . .))), T(x T(x T(x . .) T(x . .)) T(x T(x . .) .)),")
+    assert(possibleTrees.toString ==
+      "List(x(x(x,x),x(x,x)), x(x(x,x),x(x,)), x(x(x,x),x(,x)), x(x(x,),x(x,x)), x(x(x,),x(x,)), x(x(x,),x(,x)), " +
+        "x(x(,x),x(x,x)), x(x(,x),x(x,)), x(x(,x),x(,x)), x(x(x,x),x), x(x,x(x,x)), x(x(x,),x), x(x,x(x,)), " +
+        "x(x(,x),x), x(x,x(,x)))")
   }
 
   test("minHbalNodes_example") {
@@ -422,4 +423,16 @@ class BinaryTreeTest extends FunSuite {
 
   def assertOptionEqualsIfPresent[T](option : Option[T], value : T): Assertion =
     assert(option.isEmpty || option.get == value)
+
+  test("toString_empty") {
+    assert(End.toString == "")
+  }
+
+  test("toString_singleNode") {
+    assert(Node("x").toString == "x")
+  }
+
+  test("toString_testTree") {
+    assert(smallishTestTree.toString == "a(b,c(d,e))")
+  }
 }

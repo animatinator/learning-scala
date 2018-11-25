@@ -35,7 +35,10 @@ package binarytree {
   // This would be a case class but we need PositionedNode to extend it. It is therefore an abstract class and the
   // companion object implements apply and unapply to allow us to use it as though it were a case class.
   class Node[+T](val value: T, val left: Tree[T], val right: Tree[T]) extends Tree[T] {
-    override def toString: String = "T(" + value.toString + " " + left.toString + " " + right.toString + ")"
+    override def toString: String = (left, right) match {
+      case (End, End) => value.toString
+      case _ => "%s(%s,%s)".format(value.toString, left.toString, right.toString)
+    }
     override def reflect : Node[T] = Node(value, right.reflect, left.reflect)
     override def isMirrorImage[V](other : Tree[V]): Boolean = other match {
       case Node(_, l, r) => l.isMirrorImage(right) && r.isMirrorImage(left)
@@ -122,11 +125,17 @@ package binarytree {
                                 x: Int,
                                 y: Int) extends Node[T](value, left, right) {
     override def toString : String =
-      "T[" + x.toString + "," + y.toString + "](" + value.toString + " " + left.toString + " " + right.toString + ")"
+      "T[" + x.toString + "," + y.toString + "](" + value.toString + " " + string(left) + " " + string(right) + ")"
+
+    // Exists so PositionedNodes' empty children are printed correctly
+    private def string[U](child : Tree[U]) : String = child match {
+      case End => "."
+      case _ => child.toString
+    }
   }
 
   case object End extends Tree[Nothing] {
-    override def toString = "."
+    override def toString = ""
     override def reflect : Tree[Nothing] = End
     override def isMirrorImage[V](other: Tree[V]): Boolean = other == End
     override def isSymmetric: Boolean = true
