@@ -166,6 +166,30 @@ package binarytree {
     def unapply(x : Int): Option[Int] = if (x % 2 == 1) Some(x) else None
   }
 
+  object Parser {
+    implicit def toParser(string : String) : Parser = new Parser(string)
+  }
+
+  class Parser(string: String) {
+    var index : Int = 0
+
+    def isEmpty : Boolean = index >= string.length
+
+    def expectSymbol(symbol : Char): Unit = {
+      if (string(index) != symbol)
+        throw new IllegalStateException("Tried to read '%s' but found '%s'".format(symbol, string(index)))
+      index += 1
+    }
+
+    def readChar : Char = {
+      val result : Char = string(index)
+      index += 1
+      result
+    }
+
+    def peek : Char = string(index)
+  }
+
   object Tree {
     def cBalanced[T](nodes : Int, value : T) : List[Tree[T]] =
       if (nodes == 0) List(End)
@@ -235,6 +259,20 @@ package binarytree {
     def minimumDistanceBetweenTreesWithBounds(leftBounds : List[(Int, Int)], rightBounds : List[(Int, Int)]) : Int = {
       val minSpacingBetweenTrees : Int = leftBounds zip rightBounds map {case (p1, p2) => p1._2 - p2._1 + 1} max;
       if (minSpacingBetweenTrees > 2) minSpacingBetweenTrees else 2
+    }
+
+    def fromString(parser : Parser) : Tree[Char] = {
+      if (parser.isEmpty) return End
+      if (parser.peek == ',' || parser.peek == ')') return End
+      val value : Char = parser.readChar
+      if (!parser.isEmpty && parser.peek == '(') {
+        parser.expectSymbol('(')
+        val left : Tree[Char] = fromString(parser)
+        parser.expectSymbol(',')
+        val right : Tree[Char] = fromString(parser)
+        parser.expectSymbol(')')
+        Node(value, left, right)
+      } else Node(value)
     }
   }
 }

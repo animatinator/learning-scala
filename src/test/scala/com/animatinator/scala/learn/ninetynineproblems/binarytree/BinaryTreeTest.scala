@@ -435,4 +435,31 @@ class BinaryTreeTest extends FunSuite {
   test("toString_testTree") {
     assert(smallishTestTree.toString == "a(b,c(d,e))")
   }
+
+  test("parser") {
+    val parser : Parser = "test"
+    parser.expectSymbol('t')
+    parser.expectSymbol('e')
+    assert(parser.peek == 's')
+    assertThrows[IllegalStateException](parser.expectSymbol('X'))
+  }
+
+  test("fromString_empty") {
+    assert(Tree.fromString("") == End)
+  }
+
+  test("fromString_singleNode") {
+    val singleNodeString = "a"
+    assert(Tree.fromString(singleNodeString).toString == singleNodeString)
+  }
+
+  test("fromString_simpleTree") {
+    val simpleTreeString = "a(b,c(d,))"
+    assert(Tree.fromString(simpleTreeString).toString == simpleTreeString)
+  }
+
+  test("fromString_testTree") {
+    val testTreeString = smallishTestTree.toString
+    assert(Tree.fromString(testTreeString).toString == testTreeString)
+  }
 }
