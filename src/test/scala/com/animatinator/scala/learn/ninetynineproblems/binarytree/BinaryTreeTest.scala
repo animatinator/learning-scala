@@ -462,4 +462,12 @@ class BinaryTreeTest extends FunSuite {
     val testTreeString = smallishTestTree.toString
     assert(Tree.fromString(testTreeString).toString == testTreeString)
   }
+
+  test("preorder_example") {
+    assert(Tree.fromString("a(b(d,e),c(,f(g,)))").preorder == List('a', 'b', 'd', 'e', 'c', 'f', 'g'))
+  }
+
+  test("inorder_example") {
+    assert(Tree.fromString("a(b(d,e),c(,f(g,)))").inorder == List('d', 'b', 'e', 'a', 'c', 'g', 'f'))
+  }
 }

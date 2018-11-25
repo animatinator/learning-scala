@@ -30,6 +30,9 @@ package binarytree {
       else layoutBinaryTreeInternal3((bounds map {case (l, _) => -l} max) + 1, 1)
     }
     def layoutBinaryTreeInternal3(xPosition : Int, height : Int) : Tree [T]
+
+    def preorder : List[T]
+    def inorder : List[T]
   }
 
   // This would be a case class but we need PositionedNode to extend it. It is therefore an abstract class and the
@@ -113,6 +116,10 @@ package binarytree {
       }
     }
 
+    override def preorder: List[T] = value :: left.preorder ::: right.preorder
+
+    override def inorder : List[T] = left.inorder ::: List(value) ::: right.inorder
+
     override def equals(obj: scala.Any): Boolean = obj match {
       case obj : Node[T] => obj.value == value && obj.left == left && obj.right == right
       case _ => false
@@ -150,6 +157,8 @@ package binarytree {
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[Nothing], Int) = (End, nextX)
     override def layoutBinaryTreeInternal2(xPosition: Int, height: Int, spacing: Int): Tree[Nothing] = End
     override def layoutBinaryTreeInternal3(xPosition: Int, height: Int): Tree[Nothing] = End
+    override def preorder : List[Nothing] = Nil
+    override def inorder : List[Nothing] = Nil
   }
 
   object Node {
