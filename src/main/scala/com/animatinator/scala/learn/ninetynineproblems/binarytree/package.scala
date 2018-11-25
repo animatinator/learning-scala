@@ -283,5 +283,17 @@ package binarytree {
         Node(value, left, right)
       } else Node(value)
     }
+
+    def preInTree(preOrder : List[Char], inOrder : List[Char]) : Tree[Char] = {
+      if (preOrder.isEmpty) End
+      else if (preOrder.length == 1) Node(preOrder.head)
+      else {
+        val root = preOrder.head
+        val rootIndex =  inOrder.indexOf(root)
+        Node(root,
+          preInTree(preOrder.slice(1, rootIndex + 1), inOrder.slice(0, rootIndex)),
+          preInTree(preOrder.slice(rootIndex + 1, preOrder.length), inOrder.slice(rootIndex + 1, inOrder.length)))
+      }
+    }
   }
 }

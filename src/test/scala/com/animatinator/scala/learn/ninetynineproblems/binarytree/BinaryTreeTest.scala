@@ -470,4 +470,23 @@ class BinaryTreeTest extends FunSuite {
   test("inorder_example") {
     assert(Tree.fromString("a(b(d,e),c(,f(g,)))").inorder == List('d', 'b', 'e', 'a', 'c', 'g', 'f'))
   }
+
+  test("preInTree_empty") {
+    assert(Tree.preInTree(Nil, Nil) == End)
+  }
+
+  test("preInTree_singleNode") {
+    assert(Tree.preInTree(List('a'), List('a')) == Node('a'))
+  }
+
+  test("preInTree_example") {
+    assert(Tree.preInTree(List('a', 'b', 'd', 'e', 'c', 'f', 'g'), List('d', 'b', 'e', 'a', 'c', 'g', 'f')).toString ==
+      "a(b(d,e),c(,f(g,)))")
+  }
+
+  test("preInTree_testTree") {
+    val preOrder = smallishTestTree.preorder
+    val inOrder = smallishTestTree.inorder
+    assert(Tree.preInTree(preOrder, inOrder).toString == smallishTestTree.toString)
+  }
 }
