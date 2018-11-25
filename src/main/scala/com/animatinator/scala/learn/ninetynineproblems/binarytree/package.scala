@@ -22,10 +22,14 @@ package binarytree {
 
     def layoutBinaryTree : Tree[T] = layoutBinaryTreeInternal(1, 1)._1
     def layoutBinaryTreeInternal(nextX : Int, y : Int) : (Tree[T], Int)
-    def layoutBinaryTree2 : Tree[T] = {
+    def layoutBinaryTree2 : Tree[T] =
       layoutBinaryTreeInternal2(Math.pow(2, heightOfLeftmostPoint).toInt, 1, Math.pow(2, height - 1).toInt)
-    }
     def layoutBinaryTreeInternal2(xPosition : Int, height : Int, spacing : Int) : Tree[T]
+    def layoutBinaryTree3 : Tree[T] = {
+      if (bounds isEmpty) this
+      else layoutBinaryTreeInternal3((bounds map {case (l, _) => -l} max) + 1, 1)
+    }
+    def layoutBinaryTreeInternal3(xPosition : Int, height : Int) : Tree [T]
   }
 
   // This would be a case class but we need PositionedNode to extend it. It is therefore an abstract class and the
@@ -64,20 +68,22 @@ package binarytree {
 
     override def heightOfLeftmostPoint : Int = left.heightOfLeftmostPoint + 1
 
-    override def bounds : List[(Int, Int)] = (left.bounds, right.bounds) match {
+    override def bounds : List[(Int, Int)] =(left.bounds, right.bounds) match {
       case (Nil, Nil) => List((0, 0))
       case (leftBounds, Nil) => (0, 0) :: (leftBounds map {case (l, r) => (l - 1, r - 1)})
-      case (Nil, rightBounds) => (0, 0) :: rightBounds map {case (l, r) => (l + 1, r + 1)}
+      case (Nil, rightBounds) => (0, 0) :: (rightBounds map {case (l, r) => (l + 1, r + 1)})
       case (leftBounds, rightBounds) =>
         val minimumDistance = Tree.minimumDistanceBetweenTreesWithBounds(leftBounds, rightBounds)
-        println("Merging trees: [[%s]], [[%s]]".format(left, right))
-        println("Their bounds: [[%s]], [[%s]]".format(leftBounds, rightBounds))
-        println("Minimum separation: "+minimumDistance)
         val shiftFactor = (minimumDistance + 1) / 2 // Round up
-        // TODO: The problem is that zip doesn't fill in gaps if one has fewer elements. Need to fix.
-        val bounds = (0, 0) :: (leftBounds zip rightBounds).map{case (l, r) => (l._1 - shiftFactor, r._2 + shiftFactor)}
-        println("Bounds: " + bounds)
-        bounds
+
+        val leftOptionals = leftBounds map {l => Some(l)}
+        val rightOptionals = rightBounds map {r => Some(r)}
+
+        (0, 0) :: leftOptionals.zipAll(rightOptionals, None, None).map{
+          case (Some(l), None) => (l._1 - shiftFactor, l._2 - shiftFactor)
+          case (None, Some(r)) => (r._1 + shiftFactor, r._2 + shiftFactor)
+          case (Some(l), Some(r)) => (l._1 - shiftFactor, r._2 + shiftFactor)
+        }
     }
 
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[T], Int) = {
@@ -91,6 +97,17 @@ package binarytree {
         left.layoutBinaryTreeInternal2(xPosition - spacing, height + 1, spacing / 2),
         right.layoutBinaryTreeInternal2(xPosition + spacing, height + 1, spacing / 2),
         xPosition, height)
+    }
+
+    override def layoutBinaryTreeInternal3(xPosition: Int, height: Int): Tree[T] = {
+      bounds match {
+        case _ :: (l, r) :: _ =>
+          PositionedNode(value,
+            left.layoutBinaryTreeInternal3(xPosition + l, height + 1),
+            right.layoutBinaryTreeInternal3(xPosition + r, height + 1),
+            xPosition, height)
+        case _ => PositionedNode(value, End, End, xPosition, height)
+      }
     }
 
     override def equals(obj: scala.Any): Boolean = obj match {
@@ -123,6 +140,7 @@ package binarytree {
     override def heightOfLeftmostPoint : Int = 0
     override def layoutBinaryTreeInternal(nextX: Int, y : Int): (Tree[Nothing], Int) = (End, nextX)
     override def layoutBinaryTreeInternal2(xPosition: Int, height: Int, spacing: Int): Tree[Nothing] = End
+    override def layoutBinaryTreeInternal3(xPosition: Int, height: Int): Tree[Nothing] = End
   }
 
   object Node {

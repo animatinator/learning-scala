@@ -1,6 +1,6 @@
 package com.animatinator.scala.learn.ninetynineproblems.binarytree
 
-import org.scalatest.FunSuite
+import org.scalatest.{Assertion, FunSuite}
 
 
 class BinaryTreeTest extends FunSuite {
@@ -379,4 +379,47 @@ class BinaryTreeTest extends FunSuite {
   test("bounds_testTree") {
     assert(smallishTestTree.bounds == List((0, 0), (-1, 1), (0, 2)))
   }
+
+  test("bounds_listStyleTree") {
+    val listStyleTree = Node("a", Node("b", Node("c"), End), End)
+    assert(listStyleTree.bounds == List((0, 0), (-1, -1), (-2, -2)))
+  }
+
+  test("bounds_zigZagTree") {
+    val listStyleTree = Node("a", Node("b", End, Node("c")), End)
+    assert(listStyleTree.bounds == List((0, 0), (-1, -1), (0, 0)))
+  }
+
+  test("layoutBinaryTree3_empty") {
+    assert(End.layoutBinaryTree3 == End)
+  }
+
+  test("layoutBinaryTree3_singleNode") {
+    assert(Node("x").layoutBinaryTree3 == PositionedNode("x", End, End, 1, 1))
+  }
+
+  test("layoutBinaryTree3_testTree") {
+    val smallishTreeLayout = smallishTestTree.layoutBinaryTree3
+    assertMatchesPositions(smallishTreeLayout, Map('a' -> (2, 1), 'b' -> (1, 2), 'c' -> (3, 2), 'd' -> (2, 3), 'e' -> (4, 3)))
+  }
+
+  test("layoutBinaryTree3_example") {
+    val exampleTree = Tree.fromList(List('n','k','m','c','a','e','d','g','u','p','q'))
+    assert(exampleTree.bounds == List((0, 0), (-2, 2), (-3, 1), (-4, 2), (-3, -1)))
+    assertMatchesPositions(
+      exampleTree.layoutBinaryTree3,
+      Map('n' -> (5,1), 'k' -> (3, 2), 'm' -> (4, 3), 'c' -> (2, 3), 'a' -> (1, 4), 'e' -> (3, 4), 'd' -> (2, 5),
+        'g' -> (4, 5), 'u' -> (7, 2), 'p' -> (6, 3), 'q' -> (7, 4)))
+  }
+
+  def assertMatchesPositions[T](tree: Tree[T], positionMap : Map[T, (Int, Int)]) : Unit = tree match {
+    case PositionedNode(value, l, r, x, y) =>
+      assertOptionEqualsIfPresent(positionMap.get(value), (x, y))
+      assertMatchesPositions(l, positionMap)
+      assertMatchesPositions(r, positionMap)
+    case End =>
+  }
+
+  def assertOptionEqualsIfPresent[T](option : Option[T], value : T): Assertion =
+    assert(option.isEmpty || option.get == value)
 }
