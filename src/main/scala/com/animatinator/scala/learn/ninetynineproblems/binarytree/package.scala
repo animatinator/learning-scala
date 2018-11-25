@@ -33,6 +33,8 @@ package binarytree {
 
     def preorder : List[T]
     def inorder : List[T]
+
+    def toDotString : String
   }
 
   // This would be a case class but we need PositionedNode to extend it. It is therefore an abstract class and the
@@ -120,6 +122,8 @@ package binarytree {
 
     override def inorder : List[T] = left.inorder ::: List(value) ::: right.inorder
 
+    override def toDotString : String = value + left.toDotString ++ right.toDotString
+
     override def equals(obj: scala.Any): Boolean = obj match {
       case obj : Node[T] => obj.value == value && obj.left == left && obj.right == right
       case _ => false
@@ -159,6 +163,7 @@ package binarytree {
     override def layoutBinaryTreeInternal3(xPosition: Int, height: Int): Tree[Nothing] = End
     override def preorder : List[Nothing] = Nil
     override def inorder : List[Nothing] = Nil
+    override def toDotString : String = "."
   }
 
   object Node {
@@ -294,6 +299,13 @@ package binarytree {
           preInTree(preOrder.slice(1, rootIndex + 1), inOrder.slice(0, rootIndex)),
           preInTree(preOrder.slice(rootIndex + 1, preOrder.length), inOrder.slice(rootIndex + 1, inOrder.length)))
       }
+    }
+
+    def fromDotString(dotString : Parser) : Tree[Char] = {
+      if (dotString.isEmpty) return End
+      Node(dotString.readChar,
+        if (dotString.peek == '.') {dotString.readChar; End} else fromDotString(dotString),
+        if (dotString.peek == '.') {dotString.readChar; End} else fromDotString(dotString))
     }
   }
 }

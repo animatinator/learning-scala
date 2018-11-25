@@ -489,4 +489,32 @@ class BinaryTreeTest extends FunSuite {
     val inOrder = smallishTestTree.inorder
     assert(Tree.preInTree(preOrder, inOrder).toString == smallishTestTree.toString)
   }
+
+  test("toDotString_empty") {
+    assert(End.toDotString == ".")
+  }
+
+  test("toDotString_singleNode") {
+    assert(Node("x").toDotString == "x..")
+  }
+
+  test("toDotString_example") {
+    assert(Tree.fromString("a(b(d,e),c(,f(g,)))").toDotString == "abd..e..c.fg...")
+  }
+
+  test("fromDotString_empty") {
+    assert(Tree.fromDotString("") == End)
+  }
+
+  test("fromDotString_singleNode") {
+    assert(Tree.fromDotString("x..").toString == Node("x").toString)
+  }
+
+  test("fromDotString_example") {
+    assert(Tree.fromDotString("abd..e..c.fg...").toString == "a(b(d,e),c(,f(g,)))")
+  }
+
+  test("fromDotString_testTree") {
+    assert(Tree.fromDotString(smallishTestTree.toDotString).toString == smallishTestTree.toString)
+  }
 }
