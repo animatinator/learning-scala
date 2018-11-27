@@ -23,4 +23,25 @@ class MultiwayTreeTest extends FunSuite {
   test("toString_exampleTree") {
     assert(exampleTree.toString == exampleTreeString)
   }
+
+  test("internalPathLength_singleNode") {
+    assert(MTree("x").internalPathLength == 0)
+  }
+
+  test("internalPathLength_someNodes") {
+    val test : MTree[Char] = "ab^c^d^^"
+    assert(test.internalPathLength == 3)
+  }
+
+  test("internalPathLength_exampleTree") {
+    assert(exampleTree.internalPathLength == 9)
+  }
+
+  test("postorder_singleNode") {
+    assert(MTree("x").postorder == List("x"))
+  }
+
+  test("postorder_exampleTree") {
+    assert(exampleTree.postorder == List('g', 'f', 'c', 'd', 'e', 'b', 'a'))
+  }
 }

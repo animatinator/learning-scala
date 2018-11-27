@@ -6,6 +6,10 @@ package object multiwaytree {
     def this(value: T) = this(value, List())
 
     def nodeCount : Int = 1 + children.map(_.nodeCount).sum
+    def internalPathLength : Int = internalPathLengthInner(1)
+    private def internalPathLengthInner(depth : Int): Int =
+      children.map(_.internalPathLengthInner(depth + 1) + depth).sum
+    def postorder : List[T] = children.flatMap {_.postorder} ::: List(value)
 
     override def toString : String = value + children.map(_.toString).mkString + "^"
 
