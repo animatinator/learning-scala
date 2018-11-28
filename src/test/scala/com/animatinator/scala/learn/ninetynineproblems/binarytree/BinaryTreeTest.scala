@@ -261,36 +261,36 @@ class BinaryTreeTest extends FunSuite {
   test("layoutBinaryTree_complex") {
     val laidOutTree = Tree.fromList(List('n','k','m','c','a','h','g','e','u','p','s','q')).layoutBinaryTree
     // TODO: Doing a string comparison because normal comparison fails. Unclear why.
-    assert(laidOutTree.toString ==
-      PositionedNode("n",
-        PositionedNode("k",
-          PositionedNode("c",
-            PositionedNode("a", End, End,
+    assert(laidOutTree ==
+      PositionedNode('n',
+        PositionedNode('k',
+          PositionedNode('c',
+            PositionedNode('a', End, End,
               1, 4),
-            PositionedNode("h",
-              PositionedNode("g",
-                PositionedNode("e", End, End,
+            PositionedNode('h',
+              PositionedNode('g',
+                PositionedNode('e', End, End,
                   3, 6),
                 End,
                 4, 5),
               End,
               5, 4),
             2, 3),
-          PositionedNode("m", End, End,
+          PositionedNode('m', End, End,
             7, 3),
           6, 2),
-        PositionedNode("u",
-          PositionedNode("p",
+        PositionedNode('u',
+          PositionedNode('p',
             End,
-            PositionedNode("s",
-              PositionedNode("q", End, End,
+            PositionedNode('s',
+              PositionedNode('q', End, End,
                 10, 5),
               End,
               11, 4),
             9, 3),
           End,
           12, 2),
-        8, 1).toString)
+        8, 1))
   }
 
   test("height_empty") {
@@ -488,7 +488,7 @@ class BinaryTreeTest extends FunSuite {
   test("preInTree_testTree") {
     val preOrder = smallishTestTree.preorder
     val inOrder = smallishTestTree.inorder
-    assert(Tree.preInTree(preOrder, inOrder).toString == smallishTestTree.toString)
+    assert(Tree.preInTree(preOrder, inOrder) == smallishTestTree)
   }
 
   test("toDotString_empty") {
@@ -508,7 +508,7 @@ class BinaryTreeTest extends FunSuite {
   }
 
   test("fromDotString_singleNode") {
-    assert(Tree.fromDotString("x..").toString == Node("x").toString)
+    assert(Tree.fromDotString("x..") == Node('x'))
   }
 
   test("fromDotString_example") {
@@ -516,6 +516,6 @@ class BinaryTreeTest extends FunSuite {
   }
 
   test("fromDotString_testTree") {
-    assert(Tree.fromDotString(smallishTestTree.toDotString).toString == smallishTestTree.toString)
+    assert(Tree.fromDotString(smallishTestTree.toDotString) == smallishTestTree)
   }
 }
