@@ -1,5 +1,7 @@
 package com.animatinator.scala.learn.ninetynineproblems
 
+import com.animatinator.scala.learn.ninetynineproblems.util.Parser
+
 package object multiwaytree {
 
   case class MTree[+T](value: T, children: List[MTree[T]]) {
@@ -10,6 +12,10 @@ package object multiwaytree {
     private def internalPathLengthInner(depth : Int): Int =
       children.map(_.internalPathLengthInner(depth + 1) + depth).sum
     def postorder : List[T] = children.flatMap {_.postorder} ::: List(value)
+    def lispytree : String = {
+      if (children.isEmpty) value.toString
+      else "(%s %s)".format(value.toString, children map {_.lispytree} mkString " ")
+    }
 
     override def toString : String = value + children.map(_.toString).mkString + "^"
 
@@ -33,6 +39,22 @@ package object multiwaytree {
         (MTree(nodeValue, subtrees.reverse), curIndex + 1)
       }
       stringToMTreeInner(string, 0)._1
+    }
+
+    def fromLispyString(string : Parser) : MTree[Char] = {
+      if (string.peek != '(') MTree(string.readChar)
+      else {
+        string.expectSymbol('(')
+        val value = string.readChar
+        var trees : List[MTree[Char]] = List()
+        while (string.peek != ')') {
+          string.expectSymbol(' ')
+          trees ::= fromLispyString(string)
+        }
+        string.expectSymbol(')')
+
+        MTree(value, trees.reverse)
+      }
     }
   }
 }

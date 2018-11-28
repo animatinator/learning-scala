@@ -1,5 +1,6 @@
 package com.animatinator.scala.learn.ninetynineproblems.binarytree
 
+import com.animatinator.scala.learn.ninetynineproblems.util.Parser
 import org.scalatest.{Assertion, FunSuite}
 
 

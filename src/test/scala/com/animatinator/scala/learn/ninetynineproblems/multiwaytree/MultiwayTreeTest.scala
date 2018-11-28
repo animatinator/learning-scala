@@ -44,4 +44,16 @@ class MultiwayTreeTest extends FunSuite {
   test("postorder_exampleTree") {
     assert(exampleTree.postorder == List('g', 'f', 'c', 'd', 'e', 'b', 'a'))
   }
+
+  test("lispytree_exampleTree") {
+    assert(exampleTree.lispytree == "(a (f g) c (b d e))")
+  }
+
+  test("fromLispyString_singleNode") {
+    assert(MTree.fromLispyString("a") == MTree('a'))
+  }
+
+  test("fromLispyString_exampleTree") {
+    assert(MTree.fromLispyString("(a (f g) c (b d e))") == exampleTree)
+  }
 }
