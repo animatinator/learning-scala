@@ -10,6 +10,8 @@ package object graph {
       var adj: List[Edge] = Nil
       // neighbors are all nodes adjacent to this node.
       def neighbors: List[Node] = adj.map(edgeTarget(_, this).get)
+
+      override def toString: String = value.toString
     }
 
     var nodes: Map[T, Node] = Map()
@@ -37,13 +39,15 @@ package object graph {
       nodes.keys map {key =>
         (key, nodes(key).adj map {edge => (edgeTarget(edge, nodes(key)).get.value, edge.value)})} toList
 
-    // TODO: This misses nodes with no outgoing links.
-    override def toString : String =
-      "[" + (nodes.keys flatMap
-        {key => nodes(key).adj map {edge =>
-          key + edgeString + edgeTarget(edge, nodes(key)).get.value + "/" + edge.value}} mkString ", ") + "]"
+    override def toString : String = {
+      val (edgeStrings, isolatedNodes) = edges.foldLeft((Nil : List[String], nodes.keys.toList : List[T]))(
+        (soFar, edge) => (
+          "%s%s%s/%s".format(edge.n1, edgeSeparator, edge.n2, edge.value) :: soFar._1,
+          soFar._2 filter {thing => thing != edge.n1.value && thing != edge.n2.value}))
+      "[" + (((isolatedNodes map {thing => thing.toString}) ::: edgeStrings) mkString ", ") + "]"
+    }
 
-    def edgeString : String
+    def edgeSeparator : String
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
@@ -64,7 +68,7 @@ package object graph {
       nodes(n2).adj = e :: nodes(n2).adj
     }
 
-    def edgeString = "-"
+    def edgeSeparator: String = Graph.edgeSeparator
   }
 
   class Digraph[T, U] extends GraphBase[T, U] {
@@ -83,7 +87,7 @@ package object graph {
       nodes(source).adj = e :: nodes(source).adj
     }
 
-    def edgeString = ">"
+    def edgeSeparator: String = Digraph.edgeSeparator
   }
 
   abstract class GraphObjBase {
@@ -98,6 +102,27 @@ package object graph {
     def adjacent[T](nodes: List[(T, List[T])]): GraphClass[T, Unit] =
       adjacentLabel(addAdjacentLabel(nodes))
     def adjacentLabel[T, U](nodes: List[(T, List[(T,U)])]): GraphClass[T, U]
+
+    def fromStringLabel(string : String) : GraphClass[String, Int] = {
+      def parseEdge(edgeString : String) : (String, String, Int) = {
+        val separated : Array[String] = edgeString.split("%s|/".format(edgeSeparator))
+        (separated(0), separated(1), if (separated.length > 2) separated(2).toInt else 1)
+      }
+
+      val edgeStrings = string.slice(1, string.length - 1).split(", ")
+      val termForm =
+        edgeStrings.foldLeft((Nil : List[String], Nil : List[(String, String, Int)]))((soFar, edgeString) => {
+          if (edgeString.length == 1) {
+            (edgeString :: soFar._1, soFar._2)
+          } else {
+            val edge = parseEdge(edgeString)
+            (edge._1 :: edge._2 :: soFar._1, edge :: soFar._2)
+          }
+        })
+      termLabel(termForm._1, termForm._2)
+    }
+
+    def edgeSeparator : String
   }
 
   object Graph extends GraphObjBase {
@@ -118,6 +143,8 @@ package object graph {
       }
       g
     }
+
+    def edgeSeparator = "-"
   }
 
   object Digraph extends GraphObjBase {
@@ -135,6 +162,8 @@ package object graph {
       for ((s, a) <- nodes; (d, l) <- a) g.addArc(s, d, l)
       g
     }
+
+    def edgeSeparator: String = ">"
   }
 
 }
