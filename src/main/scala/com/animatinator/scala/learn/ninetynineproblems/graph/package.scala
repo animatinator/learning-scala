@@ -48,6 +48,11 @@ package object graph {
     }
 
     def edgeSeparator : String
+
+    def findPaths(start : T, goal : T) : List[List[T]] = {
+      if (start == goal) List(List(goal))
+      else (nodes(start).neighbors flatMap {x => findPaths(x.value, goal)}) map {start :: _}
+    }
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
