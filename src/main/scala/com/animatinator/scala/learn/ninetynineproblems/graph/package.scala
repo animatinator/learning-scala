@@ -50,9 +50,15 @@ package object graph {
     def edgeSeparator : String
 
     def findPaths(start : T, goal : T) : List[List[T]] = {
-      if (start == goal) List(List(goal))
-      else (nodes(start).neighbors flatMap {x => findPaths(x.value, goal)}) map {start :: _}
+      def findPathsInner(s : T, g : T, visited : List[T]) : List[List[T]] = {
+        if (s == g) List(List(g))
+        else if (visited.contains(s)) Nil
+        else (nodes(s).neighbors flatMap {neighbour => findPathsInner(neighbour.value, g, s :: visited)}) map {s :: _}
+      }
+      findPathsInner(start, goal, Nil)
     }
+
+    def findCycles(node : T) : List[List[T]] = nodes(node).neighbors flatMap {x => findPaths(x.value, node)} map {node :: _} filter {_.length > 3}
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
@@ -108,7 +114,7 @@ package object graph {
       adjacentLabel(addAdjacentLabel(nodes))
     def adjacentLabel[T, U](nodes: List[(T, List[(T,U)])]): GraphClass[T, U]
 
-    def fromStringLabel(string : String) : GraphClass[String, Int] = {
+    def fromString(string : String) : GraphClass[String, Int] = {
       def parseEdge(edgeString : String) : (String, String, Int) = {
         val separated : Array[String] = edgeString.split("%s|/".format(edgeSeparator))
         (separated(0), separated(1), if (separated.length > 2) separated(2).toInt else 1)

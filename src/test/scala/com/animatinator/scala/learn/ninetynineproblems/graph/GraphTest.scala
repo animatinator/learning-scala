@@ -50,7 +50,7 @@ class GraphTest extends FunSuite {
   }
 
   test("fromStringLabel_example1") {
-    val graph = Graph.fromStringLabel("[b-c, f-c, g-h, d, f-b, k-f, h-g]")
+    val graph = Graph.fromString("[b-c, f-c, g-h, d, f-b, k-f, h-g]")
     assertRepsEqual(
       graph.toTermForm,
       (List("d", "k", "h", "c", "f", "g", "b"),
@@ -58,19 +58,24 @@ class GraphTest extends FunSuite {
   }
 
   test("fromStringLabel_example2") {
-    val digraph = Digraph.fromStringLabel("[p>q/9, m>q/7, k, p>m/5]")
+    val digraph = Digraph.fromString("[p>q/9, m>q/7, k, p>m/5]")
     assertEqual(
       digraph.toAdjacentForm, List(("m",List(("q",7))), ("p",List(("m",5), ("q",9))), ("k",List()), ("q",List())))
   }
 
   test("findPaths_example") {
     assert(
-      Digraph.fromStringLabel("[p>q/9, m>q/7, k, p>m/5]").findPaths("p", "q")
+      Digraph.fromString("[p>q/9, m>q/7, k, p>m/5]").findPaths("p", "q")
         == List(List("p", "q"), List("p", "m", "q")))
   }
 
   test("findPaths_noPathsExample") {
-    assert(Digraph.fromStringLabel("[p>q/9, m>q/7, k, p>m/5]").findPaths("p", "k") == Nil)
+    assert(Digraph.fromString("[p>q/9, m>q/7, k, p>m/5]").findPaths("p", "k") == Nil)
+  }
+
+  test("findCycles_example") {
+    assert(Graph.fromString("[b-c, f-c, g-h, d, f-b, k-f, h-g]").findCycles("f")
+      == List(List("f", "c", "b", "f"), List("f", "b", "c", "f")))
   }
 
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
