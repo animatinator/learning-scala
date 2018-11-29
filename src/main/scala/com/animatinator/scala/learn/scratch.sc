@@ -425,3 +425,7 @@ val stream : Stream[Int] = List(1, 1, 2).toAStream
 import ExtendedStream._
 
 stream.zip3(stream, stream)
+
+def f(x : Int, y : Int) = x + y
+val ff = f _
+(f _).tupled((1, 2))
