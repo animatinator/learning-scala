@@ -33,9 +33,17 @@ package object graph {
     def toTermForm : (List[T], List[(T, T, U)]) =
       (nodes.keys.toList, edges map {edge => (edge.n1.value, edge.n2.value, edge.value)})
 
-    def toAdjacentForm : List[(T, List[(T, U)])] = {
-      nodes.keys map {key => (key, nodes(key).adj map {x => (x.n2.value, x.value)})} toList
-    }
+    def toAdjacentForm : List[(T, List[(T, U)])] =
+      nodes.keys map {key =>
+        (key, nodes(key).adj map {edge => (edgeTarget(edge, nodes(key)).get.value, edge.value)})} toList
+
+    // TODO: This misses nodes with no outgoing links.
+    override def toString : String =
+      "[" + (nodes.keys flatMap
+        {key => nodes(key).adj map {edge =>
+          key + edgeString + edgeTarget(edge, nodes(key)).get.value + "/" + edge.value}} mkString ", ") + "]"
+
+    def edgeString : String
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
@@ -55,6 +63,8 @@ package object graph {
       nodes(n1).adj = e :: nodes(n1).adj
       nodes(n2).adj = e :: nodes(n2).adj
     }
+
+    def edgeString = "-"
   }
 
   class Digraph[T, U] extends GraphBase[T, U] {
@@ -72,6 +82,8 @@ package object graph {
       edges = e :: edges
       nodes(source).adj = e :: nodes(source).adj
     }
+
+    def edgeString = ">"
   }
 
   abstract class GraphObjBase {

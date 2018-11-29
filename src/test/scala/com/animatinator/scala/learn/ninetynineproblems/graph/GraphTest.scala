@@ -32,6 +32,13 @@ class GraphTest extends FunSuite {
     assertEqual(graph.toAdjacentForm, adjacencyFormExample)
   }
 
+  test("toString_example") {
+    val digraph = Digraph.adjacentLabel(adjacencyFormExample)
+    assert(digraph.toString == "[p>q/9, p>m/5, m>q/7, k]")
+    val graph = Graph.adjacentLabel(adjacencyFormExample)
+    assert(graph.toString == "[m-q/7, q-p/9, p-q/9, m-p/5, p-m/5, q-m]/7")
+  }
+
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
     assertEqual(first._1, second._1) && assertEqual(first._2, second._2)
 
