@@ -12,6 +12,8 @@ package object graph {
       def neighbors: List[Node] = adj.map(edgeTarget(_, this).get)
 
       override def toString: String = value.toString
+
+      def degree : Int = adj.length
     }
 
     var nodes: Map[T, Node] = Map()
@@ -111,6 +113,20 @@ package object graph {
     def isIsomorphicTo[V](g2 : Graph[V, U]) : Boolean = {
       if (nodes.keys.size != g2.nodes.keys.size) false
       else Graph.possibleMappings(nodes.keys.toList, g2.nodes.keys.toList) exists(applyMapping(_) == g2)
+    }
+
+    def nodesByDegree : List[Node] = nodes.values.toList.sortWith(_.degree > _.degree)
+
+    def colourNodes : List[(Node, Int)] = {
+      def colourNodesR(nodes : List[Node], colouring : Map[Node, Int]) : List[(Node, Int)] = nodes match {
+        case Nil => Nil
+        case headNode :: tail =>
+          val takenColours = headNode.neighbors map {colouring.getOrElse(_, 0)}
+          val colour : Int = Stream.from(1).find(!takenColours.contains(_)) getOrElse 0
+          (headNode, colour) :: colourNodesR(tail, colouring + (headNode -> colour))
+      }
+
+      colourNodesR(nodesByDegree, Map())
     }
   }
 

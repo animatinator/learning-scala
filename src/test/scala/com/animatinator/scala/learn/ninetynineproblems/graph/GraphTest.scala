@@ -165,6 +165,18 @@ class GraphTest extends FunSuite {
     assert(g1.isIsomorphicTo(g2))
   }
 
+  test("degree_example") {
+    assert(Graph.fromString("[a-b, b-c, a-c, a-d]").nodes("a").degree == 3)
+  }
+
+  test("nodesByDegree_example") {
+    assert(Graph.fromString("[a-b, b-c, a-c, a-d]").nodesByDegree.toString() == "List(a, b, c, d)")
+  }
+
+  test("colourNodes_example") {
+    assert(Graph.fromString("[a-b, b-c, a-c, a-d]").colourNodes.toString == "List((a,1), (b,2), (c,3), (d,2))")
+  }
+
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
     assertEqual(first._1, second._1) && assertEqual(first._2, second._2)
 
