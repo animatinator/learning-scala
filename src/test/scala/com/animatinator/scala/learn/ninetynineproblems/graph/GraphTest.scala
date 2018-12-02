@@ -135,6 +135,36 @@ class GraphTest extends FunSuite {
     assert(graph.minimumSpanningTree == Graph.fromString("[f-g/4, a-d/3, d-g/3, g-h/1, e-h/5, b-c/2, b-e/4]"))
   }
 
+  test("possibleMappings_empty") {
+    assert(Graph.possibleMappings(List(), List()) == List(Map()))
+    assert(Graph.possibleMappings(List(), List(1)) == List(Map()))
+    assert(Graph.possibleMappings(List(1), List()) == Nil)
+  }
+
+  test("possibleMappings_simple") {
+    assert(Graph.possibleMappings(List("a", "b"), List(1, 2))
+      == List(Map("a" -> 1, "b" -> 2), Map("a" -> 2, "b" -> 1)))
+  }
+
+  test("applyMapping_numerify") {
+    assert(Graph.fromString("[a-b, b-c, c-d]").applyMapping(Map("a" -> "1", "b" -> "2", "c" -> "3", "d" -> "4"))
+      == Graph.fromString("[1-2, 2-3, 3-4]"))
+  }
+
+  test("isIsomorphicTo_singleNode") {
+    assert(Graph.fromString("[a]").isIsomorphicTo(Graph.fromString("[t]")))
+  }
+
+  test("isIsomorphicTo_simpleExample") {
+    assert(Graph.fromString("[a-b]").isIsomorphicTo(Graph.fromString("[5-7]")))
+  }
+
+  test("isIsomorphicTo_moreComplex") {
+    val g1 = Graph.fromString("[a-b, b-c, c-d, a-d, a-c]")
+    val g2 = Graph.fromString("[c-a, a-t, t-s, c-s, c-t]")
+    assert(g1.isIsomorphicTo(g2))
+  }
+
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
     assertEqual(first._1, second._1) && assertEqual(first._2, second._2)
 

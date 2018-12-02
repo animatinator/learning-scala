@@ -101,6 +101,17 @@ package object graph {
       if (!isConnected) throw new Exception("Must be connected!")
       else minimumSpanningTreeR(nodes.values.toList.tail, edges, Nil)
     }
+
+    def applyMapping[V](map : Map[T, V]) : Graph[V, U] = {
+      Graph.termLabel(
+        nodes.keys map {map(_)} toList,
+        edges map {_.toTuple} map {case (n1, n2, v) => (map(n1), map(n2), v)})
+    }
+
+    def isIsomorphicTo[V](g2 : Graph[V, U]) : Boolean = {
+      if (nodes.keys.size != g2.nodes.keys.size) false
+      else Graph.possibleMappings(nodes.keys.toList, g2.nodes.keys.toList) exists(applyMapping(_) == g2)
+    }
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
@@ -176,6 +187,13 @@ package object graph {
     }
 
     def edgeSeparator : String
+
+    def possibleMappings[T, U](n1s : List[T], n2s : List[U]) : List[Map[T, U]] = {
+      if (n1s.isEmpty) List(Map())
+      else n1s match {
+        case n1 :: n1tail => n2s flatMap {
+          n2 => possibleMappings(n1tail, n2s.filterNot(_ == n2)) map {mapping : Map[T, U] => mapping + (n1 -> n2)}}}
+    }
   }
 
   object Graph extends GraphObjBase {
