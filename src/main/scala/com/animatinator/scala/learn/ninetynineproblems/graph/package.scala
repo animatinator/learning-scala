@@ -78,6 +78,10 @@ package object graph {
       // work. Haven't succeeded in implementing a working hashCode yet.
       spanningTreesR(Nil, edges, Nil).toSet.toList
     }
+
+    def isTree : Boolean = spanningTrees.length == 1
+
+    def isConnected : Boolean = spanningTrees.nonEmpty
   }
 
   class Graph[T, U] extends GraphBase[T, U] {

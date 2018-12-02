@@ -9,6 +9,7 @@ class GraphTest extends FunSuite {
     List(('k', Nil), ('m', List(('q', 7))), ('p', List(('m', 5), ('q', 9))), ('q', Nil))
 
   val exampleGraph: Graph[Char, Int] = Graph.termLabel(termFormExample._1, termFormExample._2)
+  val tree: Graph[String, Int] = Graph.fromString("[a-b, a-c, b-d, b-e, c-f, c-g]")
 
   test("toTermForm_singleNode") {
     assert(Digraph.term(List('a'), Nil).toTermForm == (List('a'), Nil))
@@ -94,6 +95,22 @@ class GraphTest extends FunSuite {
     //println(graph.spanningTrees.length)
 
     assert(Graph.fromString("[a-b, b-c, a-c]").spanningTrees.length == 3)
+  }
+
+  test("isTree_notATree") {
+    assert(!exampleGraph.isTree)
+  }
+
+  test("isTree_simpleTree") {
+    assert(tree.isTree)
+  }
+
+  test("isConnected_notConnected") {
+    assert(!exampleGraph.isConnected)
+  }
+
+  test("isConnected_tree") {
+    assert(tree.isConnected)
   }
 
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
