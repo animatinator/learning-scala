@@ -82,6 +82,25 @@ package object graph {
     def isTree : Boolean = spanningTrees.length == 1
 
     def isConnected : Boolean = spanningTrees.nonEmpty
+
+    def minimumSpanningTree(implicit f: U => Ordered[U]) : Graph[T, U] = {
+      def possibleNextEdges(remainingNodes : List[Node], remainingEdges : List[Edge]) : List[Edge] =
+        remainingEdges filter {linksToExistingGraph(_, remainingNodes)}
+
+      def minimumSpanningTreeR(remainingNodes : List[Node], remainingEdges : List[Edge], treeEdges : List[Edge]) : Graph[T, U] = {
+        if (remainingNodes.isEmpty) Graph.termLabel(nodes.values.map(_.value).toList, treeEdges.map(_.toTuple))
+        else {
+          val newEdge = possibleNextEdges(remainingNodes, remainingEdges).minBy(_.value)
+          minimumSpanningTreeR(
+            remainingNodes.filterNot(n => n == newEdge.n1 || n == newEdge.n2),
+            remainingEdges.filterNot(_ == newEdge),
+            newEdge :: treeEdges)
+        }
+      }
+
+      if (!isConnected) throw new Exception("Must be connected!")
+      else minimumSpanningTreeR(nodes.values.toList.tail, edges, Nil)
+    }
   }
 
   class Graph[T, U] extends GraphBase[T, U] {

@@ -113,6 +113,28 @@ class GraphTest extends FunSuite {
     assert(tree.isConnected)
   }
 
+  test("minimumSpanningTree_notConnected") {
+    assertThrows[Exception](exampleGraph.minimumSpanningTree)
+  }
+
+  test("minimumSpanningTree_simpleTree") {
+    assert(tree.minimumSpanningTree == tree)
+  }
+
+  test("minimumSpanningTree_example") {
+    assert(Graph.fromString("[a-b/1, b-c/2, a-c/3]").minimumSpanningTree == Graph.fromString("[a-b/1, b-c/2]"))
+  }
+
+  test("minimumSpanningTree_biggerExample") {
+    val graph = Graph.termLabel(
+      List("a", "b", "c", "d", "e", "f", "g", "h"),
+      List(("a", "b", 5), ("a", "d", 3), ("b", "c", 2), ("b", "e", 4),
+        ("c", "e", 6), ("d", "e", 7), ("d", "f", 4), ("d", "g", 3),
+        ("e", "h", 5), ("f", "g", 4), ("g", "h", 1)))
+
+    assert(graph.minimumSpanningTree == Graph.fromString("[f-g/4, a-d/3, d-g/3, g-h/1, e-h/5, b-c/2, b-e/4]"))
+  }
+
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
     assertEqual(first._1, second._1) && assertEqual(first._2, second._2)
 
