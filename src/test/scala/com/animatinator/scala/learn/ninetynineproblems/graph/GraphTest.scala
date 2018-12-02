@@ -8,6 +8,8 @@ class GraphTest extends FunSuite {
   val adjacencyFormExample: List[(Char, List[(Char, Int)])] =
     List(('k', Nil), ('m', List(('q', 7))), ('p', List(('m', 5), ('q', 9))), ('q', Nil))
 
+  val exampleGraph: Graph[Char, Int] = Graph.termLabel(termFormExample._1, termFormExample._2)
+
   test("toTermForm_singleNode") {
     assert(Digraph.term(List('a'), Nil).toTermForm == (List('a'), Nil))
     assert(Graph.term(List('a'), Nil).toTermForm == (List('a'), Nil))
@@ -76,6 +78,22 @@ class GraphTest extends FunSuite {
   test("findCycles_example") {
     assert(Graph.fromString("[b-c, f-c, g-h, d, f-b, k-f, h-g]").findCycles("f")
       == List(List("f", "c", "b", "f"), List("f", "b", "c", "f")))
+  }
+
+  test("equals") {
+    assert(Graph.fromString("[b-c/1, a-b/1]") == Graph.fromString("[a-b/1, b-c/1]"))
+  }
+
+  test("spanningTrees_example") {
+    val graph = Graph.term(List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'),
+      List(('a', 'b'), ('a', 'd'), ('b', 'c'), ('b', 'e'),
+        ('c', 'e'), ('d', 'e'), ('d', 'f'), ('d', 'g'),
+        ('e', 'h'), ('f', 'g'), ('g', 'h')))
+
+    // Expensive!
+    //println(graph.spanningTrees.length)
+
+    assert(Graph.fromString("[a-b, b-c, a-c]").spanningTrees.length == 3)
   }
 
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =

@@ -26,6 +26,7 @@ package object graph {
         ((edges.map(_.toTuple) diff g.edges.map(_.toTuple)) == Nil)
       case _ => false
     }
+
     def addNode(value: T): Node = {
       val n = Node(value)
       nodes = Map(value -> n) ++ nodes
@@ -59,6 +60,24 @@ package object graph {
     }
 
     def findCycles(node : T) : List[List[T]] = nodes(node).neighbors flatMap {x => findPaths(x.value, node)} map {node :: _} filter {_.length > 3}
+
+    def linksToExistingGraph(e : Edge, existingNodes : List[Node]) : Boolean =
+      (existingNodes contains e.n1) != (existingNodes contains e.n2)
+
+    def spanningTrees : List[Graph[T, U]] = {
+      def possibleNextEdges(nodesSoFar : List[Node], remainingEdges : List[Edge]) : List[Edge] =
+        if (nodesSoFar.isEmpty) remainingEdges else remainingEdges filter {linksToExistingGraph(_, nodesSoFar)}
+
+      def spanningTreesR(nodesSoFar : List[Node], remainingEdges : List[Edge], treeEdges : List[Edge]) : List[Graph[T, U]] = {
+        if (nodesSoFar.toSet == nodes.values.toSet) List(Graph.termLabel(nodesSoFar.map(_.value), treeEdges.map(_.toTuple)))
+        else possibleNextEdges(nodesSoFar, remainingEdges) flatMap {edge : Edge =>
+          spanningTreesR(edge.n1 :: edge.n2 :: nodesSoFar, remainingEdges.filterNot(_ == edge), edge :: treeEdges)}
+      }
+
+      // TODO: This should use distinct, but because it isn't a case class hashCode isn't defined so distinct doesn't
+      // work. Haven't succeeded in implementing a working hashCode yet.
+      spanningTreesR(Nil, edges, Nil).toSet.toList
+    }
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
