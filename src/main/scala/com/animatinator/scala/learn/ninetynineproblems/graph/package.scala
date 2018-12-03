@@ -128,6 +128,20 @@ package object graph {
 
       colourNodesR(nodesByDegree, Map())
     }
+
+    def nodesByDepthInner(root : Node, visited : Set[T]) : List[T] = {
+      def depthFirstR(neighbours : List[Node], seen : Set[T]) : List[T] = neighbours match {
+        case n :: ns if seen(n.value) => depthFirstR(ns, seen)
+        case n :: ns =>
+          val nodesFromHere = nodesByDepthInner(n, seen)
+          nodesFromHere ::: depthFirstR(ns, seen ++ nodesFromHere)
+        case Nil => Nil
+      }
+
+      depthFirstR(root.neighbors, visited + root.value) ::: List(root.value)
+    }
+
+    def nodesByDepthFrom(root : T) : List[T] = nodesByDepthInner(nodes(root), Set())
   }
 
   class Graph[T, U] extends GraphBase[T, U] {

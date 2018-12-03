@@ -177,6 +177,10 @@ class GraphTest extends FunSuite {
     assert(Graph.fromString("[a-b, b-c, a-c, a-d]").colourNodes.toString == "List((a,1), (b,2), (c,3), (d,2))")
   }
 
+  test("nodesByDepthFrom_example") {
+    assert(Graph.fromString("[a-b, b-c, e, a-c, a-d]").nodesByDepthFrom("d") == List("c", "b", "a", "d"))
+  }
+
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
     assertEqual(first._1, second._1) && assertEqual(first._2, second._2)
 
