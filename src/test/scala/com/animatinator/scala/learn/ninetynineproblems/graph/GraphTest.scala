@@ -11,6 +11,42 @@ class GraphTest extends FunSuite {
   val exampleGraph: Graph[Char, Int] = Graph.termLabel(termFormExample._1, termFormExample._2)
   val tree: Graph[String, Int] = Graph.fromString("[a-b, a-c, b-d, b-e, c-f, c-g]")
 
+  test("equals") {
+    assert(Graph.fromString("[a, b, c, d-e]") == Graph.fromString("[a, b, c, d-e]"))
+  }
+
+  test("equals_labelled") {
+    assert(Graph.fromString("[b-c/1, a-b/1]") == Graph.fromString("[a-b/1, b-c/1]"))
+  }
+
+  test("hashcode") {
+    assert(Graph.fromString("[a, b, c, d-e]").hashCode() == Graph.fromString("[a, b, c, d-e]").hashCode())
+  }
+
+  // Does a correct hashcode mean distinct works?
+  test("hashcode_distinct") {
+    val g1 = Graph.fromString("[a-f, b, c, d-e]")
+    val g2 = Graph.fromString("[c, b, a-f, d-e]")
+    val g3 = Graph.fromString("[a-f, b, c, d-e]")
+    assert(List(g1, g2).distinct == List(g3))
+  }
+
+  // Does a correct hashcode mean distinct works, even with labels?
+  test("hashcode_distinct_labelled") {
+    val g1 = Graph.fromString("[a-f/1, b, c, d-e/1]")
+    val g2 = Graph.fromString("[c, b, a-f/1, d-e/1]")
+    val g3 = Graph.fromString("[a-f/1, b, c, d-e/1]")
+    assert(List(g1, g2).distinct == List(g3))
+  }
+
+  // Does the order of edges affect hash code equality? Turns out it does, and this was why distinct wasn't working
+  // properly at first - hashcode is affected by the edge ordering.
+  test("hashcode_reorderedEdges") {
+    val g1 = Graph.fromString("[a-b, c-d, e-f]")
+    val g2 = Graph.fromString("[e-f, c-d, a-b]")
+    assert(g1.hashCode == g2.hashCode)
+  }
+
   test("toTermForm_singleNode") {
     assert(Digraph.term(List('a'), Nil).toTermForm == (List('a'), Nil))
     assert(Graph.term(List('a'), Nil).toTermForm == (List('a'), Nil))
@@ -84,10 +120,6 @@ class GraphTest extends FunSuite {
   test("findCycles_example") {
     assert(Graph.fromString("[b-c, f-c, g-h, d, f-b, k-f, h-g]").findCycles("f")
       == List(List("f", "c", "b", "f"), List("f", "b", "c", "f")))
-  }
-
-  test("equals") {
-    assert(Graph.fromString("[b-c/1, a-b/1]") == Graph.fromString("[a-b/1, b-c/1]"))
   }
 
   test("spanningTrees_example") {

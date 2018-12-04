@@ -29,6 +29,12 @@ package object graph {
       case _ => false
     }
 
+    // hashCode maps away the types since Node and Edge are specific to instances of Graph, and puts them it sets so
+    // that the hash code is unaffected by order.
+    override def hashCode : Int = {
+      (nodes.keys.toSet, edges map {_.toTuple} toSet) hashCode
+    }
+
     def addNode(value: T): Node = {
       val n = Node(value)
       nodes = Map(value -> n) ++ nodes
@@ -76,9 +82,7 @@ package object graph {
           spanningTreesR(edge.n1 :: edge.n2 :: nodesSoFar, remainingEdges.filterNot(_ == edge), edge :: treeEdges)}
       }
 
-      // TODO: This should use distinct, but because it isn't a case class hashCode isn't defined so distinct doesn't
-      // work. Haven't succeeded in implementing a working hashCode yet.
-      spanningTreesR(Nil, edges, Nil).toSet.toList
+      spanningTreesR(Nil, edges, Nil).distinct
     }
 
     def isTree : Boolean = spanningTrees.length == 1
