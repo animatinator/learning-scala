@@ -236,6 +236,28 @@ class GraphTest extends FunSuite {
     assert(exampleGraph.subtractSubgraph(exampleGraph) == Graph.termLabel(Nil, Nil))
   }
 
+  test("collectNodesAndEdgesFromNode_example") {
+    val split = exampleGraph.splitByConnectionToNode('m')
+    assert(split._1 == Graph.termLabel(List('q', 'p', 'm'),List(('p','q',9), ('m','q',7), ('p','m',5))))
+    assert(split._2 == Graph.termLabel(List('k'), Nil))
+  }
+
+  test("connectedComponents_empty") {
+    assert(Graph.fromString("[]").connectedComponents == Nil)
+  }
+
+  test("connectedComponents_example") {
+    assert(Graph.fromString("[a-b, c]").connectedComponents
+      == List(Graph.fromString("[a-b]"), Graph.fromString("[c]")))
+  }
+
+  test("connectedComponents_biggerExample") {
+    val graphs = exampleGraph.connectedComponents
+    assert(graphs ==
+      List(Graph.termLabel(List('q', 'p', 'm'),List(('p','q',9),
+        ('m','q',7), ('p','m',5))), Graph.termLabel(List('k'), Nil)))
+  }
+
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
     assertEqual(first._1, second._1) && assertEqual(first._2, second._2)
 

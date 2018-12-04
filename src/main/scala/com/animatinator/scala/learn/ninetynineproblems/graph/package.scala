@@ -159,14 +159,22 @@ package object graph {
     def collectNodesAndEdgesFromNode(node : Node) : (List[Node], List[Edge]) = {
       def collectR(node : Node, nodes : List[Node], edges : List[Edge]) : (List[Node], List[Edge]) = {
         if (nodes contains node) return (nodes, edges)
-        val newNodes = node :: nodes
-        val newEdges = node.adj ::: edges
-        val downstream : List[(List[Node], List[Edge])] = node.neighbors filterNot {nodes contains} map {collectR(_, newNodes, newEdges)}
-        // TODO correct?
-        downstream.foldLeft (List[Node](), List[Edge]()) {(soFar, cur) => (cur._1 ::: soFar._1, cur._2 ::: soFar._2)}
+
+        var curNodes = node :: nodes
+        var curEdges = node.adj ::: edges
+
+        node.neighbors filterNot {nodes contains} foreach {
+          adjNode => {
+            val recurseResult = collectR(adjNode, curNodes, curEdges)
+            curNodes = recurseResult._1
+            curEdges = recurseResult._2
+          }
+        }
+
+        (curNodes.distinct, curEdges.distinct)
       }
 
-      (Nil, Nil)  // TODO
+      collectR(node, Nil, Nil)
     }
 
     def splitByConnectionToNode(node : Node) : (Graph[T, U], Graph[T, U]) = {
@@ -174,6 +182,9 @@ package object graph {
       val subGraph = Graph.termLabel(nodes map {_.value}, edges map {_.toTuple})
       (subGraph, subtractSubgraph(subGraph))
     }
+
+    // For ease of testing.
+    def splitByConnectionToNode(node : T): (Graph[T, U], Graph[T, U]) = splitByConnectionToNode(nodes(node))
 
     def connectedComponents : List[Graph[T, U]] = {
       if (nodes.isEmpty) Nil
