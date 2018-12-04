@@ -66,6 +66,11 @@ class GraphTest extends FunSuite {
       digraph.toAdjacentForm, List(("m",List(("q",7))), ("p",List(("m",5), ("q",9))), ("k",List()), ("q",List())))
   }
 
+  test("fromStringLabel_empty") {
+    val graph = Graph.fromString("[]")
+    assertRepsEqual(graph.toTermForm, (Nil, Nil))
+  }
+
   test("findPaths_example") {
     assert(
       Digraph.fromString("[p>q/9, m>q/7, k, p>m/5]").findPaths("p", "q")
@@ -179,6 +184,24 @@ class GraphTest extends FunSuite {
 
   test("nodesByDepthFrom_example") {
     assert(Graph.fromString("[a-b, b-c, e, a-c, a-d]").nodesByDepthFrom("d") == List("c", "b", "a", "d"))
+  }
+
+  test("subtractSubgraph_removeNode") {
+    assert(Graph.fromString("[a, b, c]").subtractSubgraph(Graph.fromString("[b]"))
+      == Graph.fromString("[a, c]"))
+  }
+
+  test("subtractSubgraph_removeEdge") {
+    assert(Graph.fromString("[a, b, c-d]").subtractSubgraph(Graph.fromString("[c-d]"))
+      == Graph.fromString("[a, b]"))
+  }
+
+  test("subtractSubgraph_removeNothing") {
+    assert(tree.subtractSubgraph(Graph.fromString("[]")) == tree)
+  }
+
+  test("subtractSubgraph_removeEntireGraph") {
+    assert(exampleGraph.subtractSubgraph(exampleGraph) == Graph.termLabel(Nil, Nil))
   }
 
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =

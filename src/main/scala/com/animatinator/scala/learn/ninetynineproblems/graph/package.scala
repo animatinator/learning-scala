@@ -142,6 +142,42 @@ package object graph {
     }
 
     def nodesByDepthFrom(root : T) : List[T] = nodesByDepthInner(nodes(root), Set())
+
+    // Removes all nodes and edges in the subgraph from this graph by equality.
+    def subtractSubgraph(subgraph : Graph[T, U]) : Graph[T, U] =
+      Graph.termLabel(
+        nodes.keys filterNot (subgraph.nodes.keys.toList contains) toList,
+        // This is a bit silly, but it allows us to test with other graphs whose edge types won't be equal to this
+        // graph's edge type. In practice this method will only really be called withing the graph class, so edge types
+        // will always match.
+        edges filterNot (edge => subgraph.edges map {_.toTuple} contains edge.toTuple) map {_.toTuple})
+
+    def collectNodesAndEdgesFromNode(node : Node) : (List[Node], List[Edge]) = {
+      def collectR(node : Node, nodes : List[Node], edges : List[Edge]) : (List[Node], List[Edge]) = {
+        if (nodes contains node) return (nodes, edges)
+        val newNodes = node :: nodes
+        val newEdges = node.adj ::: edges
+        val downstream : List[(List[Node], List[Edge])] = node.neighbors filterNot {nodes contains} map {collectR(_, newNodes, newEdges)}
+        // TODO correct?
+        downstream.foldLeft (List[Node](), List[Edge]()) {(soFar, cur) => (cur._1 ::: soFar._1, cur._2 ::: soFar._2)}
+      }
+
+      (Nil, Nil)  // TODO
+    }
+
+    def splitByConnectionToNode(node : Node) : (Graph[T, U], Graph[T, U]) = {
+      val (nodes, edges) = collectNodesAndEdgesFromNode(node)
+      val subGraph = Graph.termLabel(nodes map {_.value}, edges map {_.toTuple})
+      (subGraph, subtractSubgraph(subGraph))
+    }
+
+    def connectedComponents : List[Graph[T, U]] = {
+      if (nodes.isEmpty) Nil
+      else {
+        val (firstComponent, remainder) = splitByConnectionToNode(nodes.values.head)
+        firstComponent :: remainder.connectedComponents
+      }
+    }
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
@@ -203,6 +239,7 @@ package object graph {
         (separated(0), separated(1), if (separated.length > 2) separated(2).toInt else 1)
       }
 
+      if (string == "[]") return termLabel(Nil, Nil)
       val edgeStrings = string.slice(1, string.length - 1).split(", ")
       val termForm =
         edgeStrings.foldLeft((Nil : List[String], Nil : List[(String, String, Int)]))((soFar, edgeString) => {
