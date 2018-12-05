@@ -258,6 +258,22 @@ class GraphTest extends FunSuite {
         ('m','q',7), ('p','m',5))), Graph.termLabel(List('k'), Nil)))
   }
 
+  test("isBipartite_digraphExample") {
+    assert(Digraph.fromString("[a>b, c>a, d>b]").isBipartite)
+  }
+
+  test("isBipartite_notBipartiteExample") {
+    assert(!Graph.fromString("[a-b, b-c, c-a]").isBipartite)
+  }
+
+  test("isBipartite_bipartiteGraphExample") {
+    assert(Graph.fromString("[a-b, b-c, d]").isBipartite)
+  }
+
+  test("isBipartite_biggerFalseExample") {
+    assert(!Graph.fromString("[a-b, b-c, d, e-f, f-g, g-e, h]").isBipartite)
+  }
+
   def assertRepsEqual[T, U](first : (List[T], List[U]), second : (List[T], List[U])): Boolean =
     assertEqual(first._1, second._1) && assertEqual(first._2, second._2)
 

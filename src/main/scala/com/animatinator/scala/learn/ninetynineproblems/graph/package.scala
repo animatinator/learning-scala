@@ -193,6 +193,9 @@ package object graph {
         firstComponent :: remainder.connectedComponents
       }
     }
+
+    // A bipartite graph can be coloured with only two colours.
+    def isBipartite : Boolean = (colourNodes map {_._2} distinct).length <= 2
   }
 
   class Graph[T, U] extends GraphBase[T, U] {
