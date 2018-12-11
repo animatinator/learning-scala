@@ -1,11 +1,6 @@
 package com.animatinator.scala.learn.ninetynineproblems
 
 package object eightqueens {
-  def allDecapitations[T](list : List[T]) : List[(T, List[T])] = {
-    (for (i <- list.indices) yield {
-      (list(i), list.slice(0, i) ::: list.slice(i+1, list.length))
-    }) toList
-  }
 
   def generatePermutations[T](list : List[T]) : List[List[T]] = {
     if (list.isEmpty) List(Nil)
@@ -14,6 +9,10 @@ package object eightqueens {
 
   def splitAroundIndex[T](list : List[T], index : Int) : (List[T], T, List[T]) =
     (list.slice(0, index), list(index), list.slice(index + 1, list.length))
+
+  def allDecapitations[T](list : List[T]) : List[(T, List[T])] = {
+    list.indices.toList map {splitAroundIndex(list, _)} map {case (l, v, r) => (v, l ::: r)}
+  }
 
   def baseNQueensPositions : List[List[Int]] = generatePermutations(List(1, 2, 3, 4, 5, 6, 7, 8))
 
