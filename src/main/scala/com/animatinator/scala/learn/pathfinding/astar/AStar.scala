@@ -7,7 +7,7 @@ import scala.collection.mutable
 object AStar {
   type Heuristic[T] = T => Int
 
-  private def updateMapWithNewNode[T](map : Map[T, Node[T]], newValue : Node[T]): Map[T, Node[T]] = {
+  def updateMapWithNewNode[T](map : Map[T, Node[T]], newValue : Node[T]): Map[T, Node[T]] = {
     if ((map contains newValue.value) && map(newValue.value).cost < newValue.cost) {
       map
     } else {
@@ -15,10 +15,10 @@ object AStar {
     }
   }
 
-  private def unwindParentsToStart[T](node : Node[T], start : T): List[T] = {
+  def unwindParentsToStart[T](node : Node[T], start : T): List[T] = {
     def unwindR(n : Node[T], path : List[T]): List[T] = n.value match {
       case v if v == start => v :: path
-      case v => unwindR(node.parent.get, v :: path)
+      case v => unwindR(n.parent.get, v :: path)
     }
 
     unwindR(node, Nil)
