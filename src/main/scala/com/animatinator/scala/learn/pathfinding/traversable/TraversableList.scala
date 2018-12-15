@@ -1,4 +1,6 @@
-package com.animatinator.scala.learn.pathfinding
+package com.animatinator.scala.learn.pathfinding.traversable
+
+import com.animatinator.scala.learn.pathfinding.Traversable
 
 class TraversableList[T](list : List[T]) extends Traversable[T] {
   override def getAdjacent(node: T): List[T] = {

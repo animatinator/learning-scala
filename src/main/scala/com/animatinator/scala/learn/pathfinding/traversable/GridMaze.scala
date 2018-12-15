@@ -1,4 +1,6 @@
-package com.animatinator.scala.learn.pathfinding
+package com.animatinator.scala.learn.pathfinding.traversable
+
+import com.animatinator.scala.learn.pathfinding.{Point, Traversable}
 
 object GridMaze {
   def empty(width : Int, height : Int): GridMaze = new GridMaze(List.fill(height)(List.fill(width)(false)))

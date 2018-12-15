@@ -1,4 +1,4 @@
-package com.animatinator.scala.learn.pathfinding
+package com.animatinator.scala.learn.pathfinding.traversable
 
 import org.scalatest.FunSuite
 

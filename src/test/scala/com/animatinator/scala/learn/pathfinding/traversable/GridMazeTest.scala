@@ -1,5 +1,6 @@
-package com.animatinator.scala.learn.pathfinding
+package com.animatinator.scala.learn.pathfinding.traversable
 
+import com.animatinator.scala.learn.pathfinding.Point
 import org.scalatest.FunSuite
 
 class GridMazeTest extends FunSuite {
