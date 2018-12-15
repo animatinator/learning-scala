@@ -11,6 +11,11 @@ class GridMazeTest extends FunSuite {
       List(true, true, false),
       List(true, false, true)))
 
+  test("illegalConstruction") {
+    assertThrows[IllegalArgumentException](new GridMaze(Nil))
+    assertThrows[IllegalArgumentException](new GridMaze(List.fill(3)(Nil)))
+  }
+
   test("setInGrid") {
     val after = List(
       List(false, false, false),
