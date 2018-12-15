@@ -1,10 +1,13 @@
 package com.animatinator.scala.learn.pathfinding.astar
 
+import com.animatinator.scala.learn.pathfinding.Point
+import com.animatinator.scala.learn.pathfinding.traversable.{GridMaze, TraversableList}
 import org.scalatest.FunSuite
 
 class AStarTest extends FunSuite {
   test("nodeOrdering") {
-    assert(Node(1, 1, 1, None) < Node(1, 2, 2, None))
+    // The priority queue puts higher-valued items first, so this ordering is inverted.
+    assert(Node(1, 1, 1, None) > Node(1, 2, 2, None))
   }
 
   test("unwindParentsToStart_alreadyThere") {
@@ -32,5 +35,18 @@ class AStarTest extends FunSuite {
     val b = Node(1, 2, 4, None)
     val newMap = AStar.updateMapWithNewNode(Map(1 -> b), a)
     assert(newMap(1) == b)
+  }
+
+  test("findPath_list") {
+    val list = new TraversableList[Char](List('a', 'b', 'c', 'd'))
+    val path = AStar.findPath(list, 'a', 'd', {_ : Char => 1})
+    assert(path == List('a', 'b', 'c', 'd'))
+  }
+
+  test("findPath_emptyGrid") {
+    val world = GridMaze.empty(5, 5)
+    val path = AStar.findPath(world, Point(1, 1), Point(4, 4), GridMaze.heuristicForGoal(Point(4, 4)))
+    // Note: This is a bit brittle.
+    assert(path == List(Point(1,1), Point(2,1), Point(2,2), Point(3,2), Point(4,2), Point(4,3), Point(4,4)))
   }
 }
