@@ -14,4 +14,12 @@ package object sorting {
       case _ => merge(mergeSort(list.slice(0, list.length / 2)), mergeSort(list.slice(list.length / 2, list.length)))
     }
   }
+
+  object QuickSort {
+    def quickSort[T](list : List[T])(implicit ord : T => Ordered[T]) : List[T] = list match {
+      case Nil => Nil
+      case head :: tail =>
+        quickSort(tail filter {_ <= head}) ::: head :: quickSort(tail filter {_ > head})
+    }
+  }
 }
