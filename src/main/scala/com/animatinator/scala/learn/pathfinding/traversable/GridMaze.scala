@@ -1,5 +1,6 @@
 package com.animatinator.scala.learn.pathfinding.traversable
 
+import com.animatinator.scala.learn.pathfinding.astar.AStar
 import com.animatinator.scala.learn.pathfinding.{Point, Traversable}
 
 object GridMaze {
@@ -8,6 +9,8 @@ object GridMaze {
   def setInGrid(grid : List[List[Boolean]], point : Point) : List[List[Boolean]] = {
     grid.updated(point.y, grid(point.y).updated(point.x, true))
   }
+
+  def heuristicForGoal(goal : Point) : AStar.Heuristic[Point] = {p => (goal - p).manhattan}
 }
 
 class GridMaze(val grid : List[List[Boolean]]) extends Traversable[Point] {

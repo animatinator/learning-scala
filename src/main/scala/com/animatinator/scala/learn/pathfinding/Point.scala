@@ -7,4 +7,7 @@ case class Point(x : Int, y : Int) {
   def +-(dist : Int): Point = Point(x + dist, y)
   def -|(dist : Int): Point = this +| -dist
   def --(dist : Int): Point = this +- -dist
+
+  // The Manhattan distance represented by the vector.
+  def manhattan : Int = x + y
 }
