@@ -47,6 +47,15 @@ class AStarTest extends FunSuite {
     val world = GridMaze.empty(5, 5)
     val path = AStar.findPath(world, Point(1, 1), Point(4, 4), GridMaze.heuristicForGoal(Point(4, 4)))
     // Note: This is a bit brittle.
-    assert(path == List(Point(1,1), Point(2,1), Point(2,2), Point(3,2), Point(4,2), Point(4,3), Point(4,4)))
+    assert(path == List(Point(1,1), Point(2,1), Point(3,1), Point(3,2), Point(4,2), Point(4,3), Point(4,4)))
+  }
+
+  test("findPath_blockedGrid") {
+    val world = GridMaze.empty(5, 5)
+    val blockedWorld = world.withWalls(List(Point(2, 1), Point(2, 2), Point(2, 3), Point(2, 4)))
+    val path = AStar.findPath(blockedWorld, Point(0, 2), Point(4, 2), GridMaze.heuristicForGoal(Point(4, 2)))
+    // Note: This is a bit brittle.
+    assert(path == List(
+      Point(0,2), Point(1,2), Point(1,1), Point(1,0), Point(2,0), Point(3,0), Point(4,0), Point(4,1), Point(4,2)))
   }
 }

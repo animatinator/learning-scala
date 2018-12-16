@@ -28,7 +28,7 @@ object AStar {
     def findPathR(nodeQueue : mutable.PriorityQueue[Node[T]], map : Map[T, Node[T]]) : List[T] = {
       val curNode = nodeQueue.dequeue()
       if (curNode.value == goal) return unwindParentsToStart(curNode, start)
-      val adjacent = world.getAdjacent(curNode.value) map {n => Node(n, curNode.distance + 1, h(n), Some(curNode))}
+      val adjacent = world.getAdjacent(curNode.value) filterNot {map.keySet contains _} map {n => Node(n, curNode.distance + 1, h(n), Some(curNode))}
       adjacent foreach {nodeQueue.enqueue(_)}
       val newMap = adjacent.foldLeft(map){(m, cur) => {updateMapWithNewNode(m, cur)}}
       findPathR(nodeQueue, newMap)

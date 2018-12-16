@@ -4,13 +4,10 @@ import com.animatinator.scala.learn.pathfinding.Traversable
 
 class TraversableList[T](list : List[T]) extends Traversable[T] {
   override def getAdjacent(node: T): List[T] = {
-    def nextAfter(elem : T, list : List[T]) : Option[T] = list match {
-      case Nil => None
-      case _ :: Nil => None
-      case x :: y :: _ if x == elem => Some(y)
-      case _ :: tail => nextAfter(elem, tail)
+    if (!(list contains node)) Nil
+    else {
+      val index = list.indexOf(node)
+      list.slice(index - 1, index) ::: list.slice(index + 1, index + 2)
     }
-
-    nextAfter(node, list).toList
   }
 }

@@ -10,10 +10,10 @@ class TraverableListTest extends FunSuite {
   }
 
   test("endOfList") {
-    assert(sampleList.getAdjacent(5) == Nil)
+    assert(sampleList.getAdjacent(5) == List(4))
   }
 
   test("midList") {
-    assert(sampleList.getAdjacent(3) == List(4))
+    assert(sampleList.getAdjacent(3) == List(2, 4))
   }
 }
