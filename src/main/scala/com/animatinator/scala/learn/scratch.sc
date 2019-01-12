@@ -429,3 +429,24 @@ stream.zip3(stream, stream)
 def f(x : Int, y : Int) = x + y
 val ff = f _
 (f _).tupled((1, 2))
+
+trait Person {
+  def name : String
+}
+
+
+trait Test {
+  def blah : String
+}
+
+// Self-typed trait
+trait Baker {
+  this : Person =>
+  def bakeACake() : Unit = println(s"$name baked a cake!")
+}
+
+class JakeTheCake extends Baker with Person {
+  def name = "Jake the Cake"
+}
+
+new JakeTheCake().bakeACake()
