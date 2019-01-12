@@ -450,3 +450,14 @@ class JakeTheCake extends Baker with Person {
 }
 
 new JakeTheCake().bakeACake()
+
+trait SayHello {
+  def sayHello() : Unit = println("Hello!")
+}
+
+trait SayHelloTheWrongWay {
+  def sayHello() : Unit = println("Olo")
+}
+
+// Indeed this doesn't work.
+//class ConflictedGreeting extends SayHello with SayHelloTheWrongWay
