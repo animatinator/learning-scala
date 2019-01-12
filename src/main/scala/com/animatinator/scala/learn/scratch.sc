@@ -461,3 +461,28 @@ trait SayHelloTheWrongWay {
 
 // Indeed this doesn't work.
 //class ConflictedGreeting extends SayHello with SayHelloTheWrongWay
+
+abstract class Monoid[T] {
+  def add(x : T, y : T) : T
+  def unit : T
+}
+
+implicit val IntMonoid : Monoid[Int] = new Monoid[Int] {
+  override def add(x: Int, y: Int) = x + y
+  override def unit = 0
+}
+
+implicit val StringMonoid : Monoid[String] = new Monoid[String] {
+  override def add(x: String, y: String) = x ++ y
+  override def unit = ""
+}
+
+def sum[T](xs : List[T])(implicit m : Monoid[T]) : T = xs match {
+  case Nil => m.unit
+  case h::tl => m.add(h, sum(tl))
+}
+
+sum(List(1, 2, 3))
+sum(List("a", "b", "c"))
+// Won't work because no 'implicit val' of type Monoid[Char] exists in scope.
+//sum(List('a', 'b', 'c'))
